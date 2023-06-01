@@ -9,10 +9,7 @@ import {
 import { Box } from '../Box/Box';
 import { CloseButton } from '../CloseButton/CloseButton';
 import { ConnectModalIntro } from '../ConnectModal/ConnectModalIntro';
-import { DisclaimerLink } from '../Disclaimer/DisclaimerLink';
-import { DisclaimerText } from '../Disclaimer/DisclaimerText';
 import { BackIcon } from '../Icons/Back';
-import { InfoButton } from '../InfoButton/InfoButton';
 import { ModalSelection } from '../ModalSelection/ModalSelection';
 import { AppContext } from '../RainbowKitProvider/AppContext';
 import {
@@ -29,13 +26,10 @@ import {
   InstructionExtensionDetail,
   InstructionMobileDetail,
 } from './ConnectDetails';
-import {
-  ScrollClassName,
-  sidebar,
-  sidebarCompactMode,
-} from './DesktopOptions.css';
+import { ScrollClassName, sidebar } from './DesktopOptions.css';
 
 export enum WalletStep {
+  local = 'LOCAL',
   None = 'NONE',
   LearnCompact = 'LEARN_COMPACT',
   Get = 'GET',
@@ -58,8 +52,8 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
   const [connectionError, setConnectionError] = useState(false);
   const modalSize = useContext(ModalSizeContext);
   const compactModeEnabled = modalSize === ModalSizeOptions.COMPACT;
-  const { disclaimer: Disclaimer } = useContext(AppContext);
-
+  const { loginInfo, loginModal } = useContext(AppContext);
+  const intl = loginInfo?.intl;
   const wallets = useWalletConnectors()
     .filter(wallet => wallet.ready || !!wallet.extensionDownloadUrl)
     .sort((a, b) => a.groupIndex - b.groupIndex);
@@ -198,16 +192,15 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
 
   switch (walletStep) {
     case WalletStep.None:
-      walletContent = (
-        <ConnectModalIntro getWallet={() => changeWalletStep(WalletStep.Get)} />
-      );
+      walletContent = null;
+      break;
+    case WalletStep.local:
+      walletContent = loginModal;
+      headerBackButtonLink = WalletStep.None;
       break;
     case WalletStep.LearnCompact:
       walletContent = (
-        <ConnectModalIntro
-          compactModeEnabled={compactModeEnabled}
-          getWallet={() => changeWalletStep(WalletStep.Get)}
-        />
+        <ConnectModalIntro getWallet={() => changeWalletStep(WalletStep.Get)} />
       );
       headerLabel = 'What is a Wallet?';
       headerBackButtonLink = WalletStep.None;
@@ -215,16 +208,15 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
     case WalletStep.Get:
       walletContent = <GetDetail getWalletDownload={getWalletDownload} />;
       headerLabel = 'Get a Wallet';
-      headerBackButtonLink = compactModeEnabled
-        ? WalletStep.LearnCompact
-        : WalletStep.None;
+      headerBackButtonLink = WalletStep.LearnCompact;
       break;
     case WalletStep.Connect:
       walletContent = selectedWallet && (
         <ConnectDetail
           changeWalletStep={changeWalletStep}
-          compactModeEnabled={compactModeEnabled}
+          compactModeEnabled
           connectionError={connectionError}
+          intl={intl}
           qrCodeUri={qrCodeUri}
           reconnect={connectToWallet}
           wallet={selectedWallet}
@@ -232,15 +224,13 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
       );
       headerLabel =
         hasQrCode &&
-        `Scan with ${
+        `${intl?.connectTitle} ${
           selectedWallet.name === 'WalletConnect'
-            ? 'your phone'
+            ? 'WalletConnect'
             : selectedWallet.name
         }`;
-      headerBackButtonLink = compactModeEnabled ? WalletStep.None : null;
-      headerBackButtonCallback = compactModeEnabled
-        ? clearSelectedWallet
-        : () => {};
+      headerBackButtonLink = WalletStep.None;
+      headerBackButtonCallback = clearSelectedWallet;
       break;
     case WalletStep.DownloadOptions:
       walletContent = selectedWallet && (
@@ -274,11 +264,7 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
       );
       headerLabel =
         selectedWallet &&
-        `Get started with ${
-          compactModeEnabled
-            ? selectedWallet.shortName || selectedWallet.name
-            : selectedWallet.name
-        }`;
+        `Get started with ${selectedWallet.shortName || selectedWallet.name}`;
       headerBackButtonLink = WalletStep.Download;
       break;
     case WalletStep.InstructionsExtension:
@@ -287,11 +273,7 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
       );
       headerLabel =
         selectedWallet &&
-        `Get started with ${
-          compactModeEnabled
-            ? selectedWallet.shortName || selectedWallet.name
-            : selectedWallet.name
-        }`;
+        `Get started with ${selectedWallet.shortName || selectedWallet.name}`;
       headerBackButtonLink = WalletStep.DownloadOptions;
       break;
     default:
@@ -301,26 +283,17 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
     <Box
       display="flex"
       flexDirection="row"
-      style={{ maxHeight: compactModeEnabled ? 468 : 504 }}
+      justifyContent="center"
+      style={{ maxHeight: 586 }}
     >
-      {(compactModeEnabled ? walletStep === WalletStep.None : true) && (
+      {walletStep === WalletStep.None && (
         <Box
-          className={compactModeEnabled ? sidebarCompactMode : sidebar}
+          className={sidebar}
           display="flex"
           flexDirection="column"
           marginTop="16"
         >
           <Box display="flex" justifyContent="space-between">
-            {compactModeEnabled && Disclaimer && (
-              <Box marginLeft="16" width="28">
-                <InfoButton
-                  onClick={() => changeWalletStep(WalletStep.LearnCompact)}
-                />
-              </Box>
-            )}
-            {compactModeEnabled && !Disclaimer && (
-              <Box marginLeft="16" width="28" />
-            )}
             <Box
               marginLeft={compactModeEnabled ? '0' : '6'}
               paddingBottom="8"
@@ -331,10 +304,12 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
                 as="h1"
                 color="modalText"
                 id={titleId}
-                size="18"
-                weight="heavy"
+                style={{
+                  fontSize: '24px',
+                }}
+                weight="bold"
               >
-                Connect a Wallet
+                {intl?.title || 'Connect Wallet'}
               </Text>
             </Box>
             {compactModeEnabled && (
@@ -343,7 +318,22 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
               </Box>
             )}
           </Box>
-          <Box className={ScrollClassName} paddingBottom="18">
+          <Box
+            className={ScrollClassName}
+            paddingBottom="18"
+            style={{ maxWidth: 368 }}
+          >
+            {compactModeEnabled && loginInfo && (
+              <ModalSelection
+                iconUrl={loginInfo.iconUrl}
+                key={loginInfo.id}
+                name={loginInfo.name}
+                onClick={() => {
+                  setWalletStep(WalletStep.local);
+                }}
+                testId={`wallet-loginInfo-${loginInfo.id}`}
+              />
+            )}
             {Object.entries(groupedWallets).map(
               ([groupName, wallets], index) =>
                 wallets.length > 0 && (
@@ -380,65 +370,15 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
                 )
             )}
           </Box>
-          {compactModeEnabled && (
-            <>
-              <Box background="generalBorder" height="1" marginTop="-1" />
-              {Disclaimer ? (
-                <Box paddingX="24" paddingY="16" textAlign="center">
-                  <Disclaimer Link={DisclaimerLink} Text={DisclaimerText} />
-                </Box>
-              ) : (
-                <Box
-                  alignItems="center"
-                  display="flex"
-                  justifyContent="space-between"
-                  paddingX="24"
-                  paddingY="16"
-                >
-                  <Box paddingY="4">
-                    <Text color="modalTextSecondary" size="14" weight="medium">
-                      New to Ethereum wallets?
-                    </Text>
-                  </Box>
-                  <Box
-                    alignItems="center"
-                    display="flex"
-                    flexDirection="row"
-                    gap="4"
-                    justifyContent="center"
-                  >
-                    <Box
-                      className={touchableStyles({
-                        active: 'shrink',
-                        hover: 'grow',
-                      })}
-                      cursor="pointer"
-                      onClick={() => changeWalletStep(WalletStep.LearnCompact)}
-                      paddingY="4"
-                      style={{ willChange: 'transform' }}
-                      transition="default"
-                    >
-                      <Text color="accentColor" size="14" weight="bold">
-                        Learn More
-                      </Text>
-                    </Box>
-                  </Box>
-                </Box>
-              )}
-            </>
-          )}
         </Box>
       )}
-      {(compactModeEnabled ? walletStep !== WalletStep.None : true) && (
+      {walletContent && (
         <>
-          {!compactModeEnabled && (
-            <Box background="generalBorder" minWidth="1" width="1" />
-          )}
           <Box
             display="flex"
             flexDirection="column"
             margin="16"
-            style={{ flexGrow: 1 }}
+            style={{ maxWidth: compactModeEnabled ? 368 : 255 }}
           >
             <Box
               alignItems="center"
@@ -446,7 +386,7 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
               justifyContent="space-between"
               marginBottom="12"
             >
-              <Box width="28">
+              <Box width="12">
                 {headerBackButtonLink && (
                   <Box
                     as="button"
@@ -475,6 +415,7 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
                 )}
               </Box>
               <Box
+                className={ScrollClassName}
                 display="flex"
                 justifyContent="center"
                 style={{ flexGrow: 1 }}
@@ -490,12 +431,14 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
                   </Text>
                 )}
               </Box>
-              <CloseButton onClose={onClose} />
             </Box>
             <Box
               display="flex"
               flexDirection="column"
-              style={{ minHeight: compactModeEnabled ? 396 : 432 }}
+              style={{
+                minHeight: 396,
+                minWidth: compactModeEnabled ? 348 : 255,
+              }}
             >
               <Box
                 alignItems="center"
@@ -507,6 +450,45 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
                 marginX="8"
               >
                 {walletContent}
+              </Box>
+            </Box>
+          </Box>
+        </>
+      )}
+      {!compactModeEnabled && (
+        <>
+          {!compactModeEnabled && (
+            <Box background="generalBorder" minWidth="1" width="1" />
+          )}
+          <Box
+            display="flex"
+            flexDirection="column"
+            margin="16"
+            style={{ flexGrow: 1, padding: '12px 12px 18px 0' }}
+          >
+            <Box
+              alignItems="center"
+              display="flex"
+              justifyContent="flex-end"
+              marginBottom="12"
+            >
+              <CloseButton onClose={onClose} />
+            </Box>
+            <Box
+              display="flex"
+              flexDirection="column"
+              style={{ minHeight: 432 }}
+            >
+              <Box
+                alignItems="center"
+                display="flex"
+                flexDirection="column"
+                gap="6"
+                height="full"
+                justifyContent="center"
+                marginX="8"
+              >
+                {loginModal}
               </Box>
             </Box>
           </Box>

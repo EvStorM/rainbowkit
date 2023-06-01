@@ -145,8 +145,8 @@ enum MobileWalletStep {
 export function MobileOptions({ onClose }: { onClose: () => void }) {
   const titleId = 'rk_connect_title';
   const wallets = useWalletConnectors();
-  const { disclaimer: Disclaimer, learnMoreUrl } = useContext(AppContext);
-
+  const { disclaimer: Disclaimer } = useContext(AppContext);
+  const { loginModal } = useContext(AppContext);
   let headerLabel = null;
   let walletContent = null;
   let headerBackgroundContrast = false;
@@ -207,33 +207,10 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
               gap="8"
               textAlign="center"
             >
-              <Text color="modalText" size="16" weight="bold">
-                What is a Wallet?
-              </Text>
-              <Text color="modalTextSecondary" size="16">
-                A wallet is used to send, receive, store, and display digital
-                assets. It&rsquo;s also a new way to log in, without needing to
-                create new accounts and passwords on&nbsp;every&nbsp;website.
-              </Text>
+              {loginModal}
             </Box>
           </Box>
 
-          <Box paddingTop="32" paddingX="20">
-            <Box display="flex" gap="14" justifyContent="center">
-              <ActionButton
-                label="Get a Wallet"
-                onClick={() => setWalletStep(MobileWalletStep.Get)}
-                size="large"
-                type="secondary"
-              />
-              <ActionButton
-                href={learnMoreUrl}
-                label="Learn More"
-                size="large"
-                type="secondary"
-              />
-            </Box>
-          </Box>
           {Disclaimer && (
             <Box marginTop="28" marginX="32" textAlign="center">
               <Disclaimer Link={DisclaimerLink} Text={DisclaimerText} />

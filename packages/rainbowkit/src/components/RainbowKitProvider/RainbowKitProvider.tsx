@@ -5,7 +5,12 @@ import { largeScreenMinWidth, ThemeVars } from '../../css/sprinkles.css';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import { lightTheme } from '../../themes/lightTheme';
 import { TransactionStoreProvider } from '../../transactions/TransactionStoreContext';
-import { AppContext, defaultAppInfo, DisclaimerComponent } from './AppContext';
+import {
+  AppContext,
+  defaultAppInfo,
+  DisclaimerComponent,
+  loginInfoType,
+} from './AppContext';
 import { AvatarComponent, AvatarContext, defaultAvatar } from './AvatarContext';
 import { CoolModeContext } from './CoolModeContext';
 import { ModalProvider } from './ModalContext';
@@ -49,6 +54,8 @@ export type Theme =
     };
 
 export interface RainbowKitProviderProps {
+  loginModal: ReactNode;
+  loginInfo: loginInfoType;
   chains: RainbowKitChain[];
   initialChain?: RainbowKitChain | number;
   id?: string;
@@ -75,6 +82,8 @@ export function RainbowKitProvider({
   coolMode = false,
   id,
   initialChain,
+  loginInfo,
+  loginModal,
   modalSize = ModalSizeOptions.WIDE,
   showRecentTransactions = false,
   theme = defaultTheme,
@@ -94,6 +103,8 @@ export function RainbowKitProvider({
   const appContext = {
     ...defaultAppInfo,
     ...appInfo,
+    loginInfo,
+    loginModal,
   };
 
   const avatarContext = avatar ?? defaultAvatar;

@@ -118,12 +118,12 @@ export function QRCode({
 
   return (
     <Box
-      borderColor="generalBorder"
-      borderRadius="menuButton"
-      borderStyle="solid"
-      borderWidth="1"
+      // borderColor="generalBorder"
+      // borderRadius="menuButton"
+      // borderStyle="solid"
+      // borderWidth="1"
       className={QRCodeBackgroundClassName}
-      padding={padding}
+      // padding={padding}
       width="max"
     >
       <Box

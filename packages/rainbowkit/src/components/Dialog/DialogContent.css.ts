@@ -8,7 +8,7 @@ export const dialogContent = style([
     borderRadius: 'modal',
     borderStyle: 'solid',
     borderWidth: '1',
-    boxShadow: 'dialog',
+    // boxShadow: 'dialog',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
@@ -49,6 +49,30 @@ export const dialogContentWideDesktop = style([
         width: '720px',
       },
     },
+  },
+]);
+export const dialogContentAuto = style([
+  sprinkles({
+    background: 'modalBackground',
+    borderColor: 'modalBorder',
+    borderRadius: 'modal',
+    borderStyle: 'solid',
+    borderWidth: '1',
+    // boxShadow: 'dialog',
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    position: 'relative',
+  }),
+  {
+    '@media': {
+      [`screen and (min-width: ${largeScreenMinWidth}px)`]: {
+        width: 'auto',
+      },
+    },
+    'boxSizing': 'content-box',
+    'maxWidth': '100vw',
+    'width': 'auto',
   },
 ]);
 

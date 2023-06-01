@@ -13,9 +13,11 @@ interface DialogContentProps {
   padding?: BoxProps['padding'];
   marginTop?: BoxProps['marginTop'];
   wide?: boolean;
+  auto?: boolean;
 }
 
 export function DialogContent({
+  auto = false,
   bottomSheetOnMobile = false,
   children,
   marginTop,
@@ -29,6 +31,7 @@ export function DialogContent({
     <Box marginTop={marginTop}>
       <Box
         className={[
+          auto ? (mobile ? null : styles.dialogContentAuto) : null,
           wide
             ? mobile
               ? styles.dialogContentWideMobile

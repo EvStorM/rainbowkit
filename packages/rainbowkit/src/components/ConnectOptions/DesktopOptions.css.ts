@@ -22,7 +22,9 @@ export const sidebar = style({
       minWidth: '287px',
     },
   },
-  'minWidth': '246px',
+  'minWidth': '368px',
+  'padding-left': '18px',
+  'padding-top': '18px',
 });
 
 export const sidebarCompactMode = style({
