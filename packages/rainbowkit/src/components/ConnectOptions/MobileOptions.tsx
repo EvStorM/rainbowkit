@@ -1,6 +1,7 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { touchableStyles } from '../../css/touchableStyles';
 import { isIOS } from '../../utils/isMobile';
+import { getWalletConnectConnector } from '../../wallets/getWalletConnectConnector';
 import {
   useWalletConnectors,
   WalletConnector,
@@ -9,10 +10,10 @@ import { AsyncImage } from '../AsyncImage/AsyncImage';
 import { Box } from '../Box/Box';
 import { ActionButton } from '../Button/ActionButton';
 import { CloseButton } from '../CloseButton/CloseButton';
-import { DisclaimerLink } from '../Disclaimer/DisclaimerLink';
-import { DisclaimerText } from '../Disclaimer/DisclaimerText';
 import { BackIcon } from '../Icons/Back';
-import { AppContext } from '../RainbowKitProvider/AppContext';
+import { QRCode } from '../QRCode/QRCode';
+import { useChainModal } from '../RainbowKitProvider/ModalContext';
+import { useRainbowKitChains } from '../RainbowKitProvider/RainbowKitChainContext';
 import { useCoolMode } from '../RainbowKitProvider/useCoolMode';
 import { setWalletConnectDeepLink } from '../RainbowKitProvider/walletConnectDeepLink';
 import { Text } from '../Text/Text';
@@ -144,9 +145,19 @@ enum MobileWalletStep {
 
 export function MobileOptions({ onClose }: { onClose: () => void }) {
   const titleId = 'rk_connect_title';
+  const chains = useRainbowKitChains();
   const wallets = useWalletConnectors();
-  const { disclaimer: Disclaimer } = useContext(AppContext);
-  const { loginModal } = useContext(AppContext);
+  const showuri = async () => {
+    const connector = getWalletConnectConnector({ chains, version: '2' });
+    const { uri } = (await connector.getProvider()).connector;
+    console.log(
+      '%c [ uri ]-150-「MobileOptions.tsx」',
+      'font-size:13px; background:#FFE47F; color:#000000;',
+      connector,
+      uri
+    );
+  };
+  showuri();
   let headerLabel = null;
   let walletContent = null;
   let headerBackgroundContrast = false;
@@ -155,9 +166,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   const [walletStep, setWalletStep] = useState<MobileWalletStep>(
     MobileWalletStep.Connect
   );
-
   const ios = isIOS();
-
   switch (walletStep) {
     case MobileWalletStep.Connect: {
       headerLabel = 'Connect a Wallet';
@@ -175,6 +184,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
               {wallets
                 .filter(wallet => wallet.ready)
                 .map(wallet => {
+                  // showuri();
                   return (
                     <Box key={wallet.id} paddingX="20">
                       <Box width="60">
@@ -185,37 +195,19 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
                 })}
             </Box>
           </Box>
-
           <Box
-            background="generalBorder"
-            height="1"
-            marginBottom="32"
-            marginTop="-1"
-          />
-
-          <Box
-            alignItems="center"
+            background="profileForeground"
             display="flex"
-            flexDirection="column"
-            gap="32"
-            paddingX="32"
-            style={{ textAlign: 'center' }}
+            paddingBottom="20"
+            paddingTop="6"
           >
-            <Box
-              display="flex"
-              flexDirection="column"
-              gap="8"
-              textAlign="center"
-            >
-              {loginModal}
-            </Box>
+            <QRCode
+              logoBackground="profileForeground"
+              logoSize={72}
+              size={290}
+              uri="qrCodeUri"
+            />
           </Box>
-
-          {Disclaimer && (
-            <Box marginTop="28" marginX="32" textAlign="center">
-              <Disclaimer Link={DisclaimerLink} Text={DisclaimerText} />
-            </Box>
-          )}
         </Box>
       );
       break;
@@ -336,7 +328,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <Box display="flex" flexDirection="column" paddingBottom="36">
+    <Box display="flex" flexDirection="column">
       {/* header section */}
       <Box
         background={

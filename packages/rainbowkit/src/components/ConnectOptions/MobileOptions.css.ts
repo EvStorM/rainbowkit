@@ -10,3 +10,12 @@ export const scroll = style({
   },
   transform: 'translateZ(0)',
 });
+export const GridBox = style({
+  alignItems: 'start',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  gridTemplateRows: 'repeat(3, 1fr)',
+  justifyContent: 'center',
+  minWidth: '100%',
+  width: '100%',
+});

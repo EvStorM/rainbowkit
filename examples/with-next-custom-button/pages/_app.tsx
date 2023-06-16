@@ -11,10 +11,19 @@ import {
   argentWallet,
   trustWallet,
   ledgerWallet,
+  okxWallet,
+  bitskiWallet,
+  coinbaseWallet,
+  imTokenWallet,
+  braveWallet,
+  dawnWallet,
+  metaMaskWallet,
+  walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, goerli } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
+import { bitKeepWallet } from './wallets/BitKeppWallet/BitKeepWallet';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
   [
@@ -27,7 +36,7 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   [publicProvider()]
 );
 
-const projectId = 'YOUR_PROJECT_ID';
+const projectId = '165789656e5cb6aa070abd1894acfea2';
 
 const { wallets } = getDefaultWallets({
   appName: 'RainbowKit demo',
@@ -40,13 +49,24 @@ const demoAppInfo = {
 };
 
 const connectors = connectorsForWallets([
-  ...wallets,
+  {
+    groupName: '推荐',
+    wallets: [
+      bitKeepWallet({ projectId, chains }),
+      walletConnectWallet({ chains }),
+      metaMaskWallet({ projectId, chains }),
+      trustWallet({ projectId, chains }),
+      okxWallet({ projectId, chains }),
+    ],
+  },
   {
     groupName: 'Other',
     wallets: [
+      imTokenWallet({ projectId, chains }),
+      braveWallet({ chains }),
       argentWallet({ projectId, chains }),
-      trustWallet({ projectId, chains }),
       ledgerWallet({ projectId, chains }),
+      dawnWallet({ chains }),
     ],
   },
 ]);
