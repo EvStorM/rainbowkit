@@ -1,8 +1,9 @@
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectButton, useBlockModal } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 
 const Home: NextPage = () => {
+  const { closeBlockModal, openBlockModal, setChildren } = useBlockModal();
   return (
     <div
       style={{
@@ -11,6 +12,16 @@ const Home: NextPage = () => {
         padding: 12,
       }}
     >
+      <button
+        onClick={() => {
+          setChildren?.(
+            <div style={{ width: 480 }}>{new Date().getTime()}</div>
+          );
+          openBlockModal?.();
+        }}
+      >
+        openBox
+      </button>
       <ConnectButton.Custom>
         {({
           account,

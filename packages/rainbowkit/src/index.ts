@@ -6,6 +6,8 @@ export {
   useAccountModal,
   useChainModal,
   useConnectModal,
+  useCloseModal,
+  useBlockModal,
 } from './components/RainbowKitProvider/ModalContext';
 export { useAddRecentTransaction } from './transactions/useAddRecentTransaction';
 export {

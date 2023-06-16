@@ -161,7 +161,7 @@ export function ConnectDetail({
   compactModeEnabled,
   connectionError,
   onClose,
-  qrCodeUri,
+  intl,
   reconnect,
   wallet,
 }: {
@@ -172,6 +172,7 @@ export function ConnectDetail({
   reconnect: (wallet: WalletConnector) => void;
   wallet: WalletConnector;
   onClose: () => void;
+  intl?: any;
 }) {
   const {
     downloadUrls,
@@ -196,19 +197,17 @@ export function ConnectDetail({
     href?: string;
   } | null = showWalletConnectModal
     ? {
-        description: `Need the ${
-          compactModeEnabled ? '' : 'official'
-        } WalletConnect modal?`,
-        label: 'OPEN',
-        onClick: () => {
-          onClose();
-          showWalletConnectModal();
-        },
-      }
+        description:
+          `${intl.WalletConnect.tips}` ||
+          `Need the ${
+            compactModeEnabled ? '' : 'official'
+          } WalletConnect modal?`,
+        label: intl.openBtn,
+        onClick: showWalletConnectModal,
     : hasQrCode
     ? {
-        description: `Don\u2019t have ${name}?`,
-        label: 'GET',
+        description: `${intl.nohaveTips} ${name}?`,
+        label: intl.getBtn,
         onClick: () =>
           changeWalletStep(
             hasQrCodeAndExtension
@@ -241,7 +240,7 @@ export function ConnectDetail({
             logoUrl={iconUrl}
             size={
               compactModeEnabled
-                ? 318
+                ? 290
                 : smallWindow
                 ? Math.max(280, Math.min(windowWidth - 308, 382))
                 : 382
@@ -275,7 +274,7 @@ export function ConnectDetail({
             >
               <Text color="modalText" size="18" weight="bold">
                 {ready
-                  ? `Opening ${name}...`
+                  ? `${intl.openWallet} ${name}...`
                   : hasExtension
                   ? `${name} is not installed`
                   : `${name} is not available`}
@@ -303,7 +302,8 @@ export function ConnectDetail({
                       textAlign="center"
                       weight="medium"
                     >
-                      Confirm connection in the extension
+                      {`${intl.waitingWallet}` ||
+                        'Confirm connection in the extension'}
                     </Text>
                   </Box>
                   <Box
@@ -316,7 +316,7 @@ export function ConnectDetail({
                   >
                     {connectionError ? (
                       <ActionButton
-                        label="RETRY"
+                        label={intl.retryBtn || 'RETRY'}
                         onClick={
                           getDesktopDeepLink
                             ? async () => {
