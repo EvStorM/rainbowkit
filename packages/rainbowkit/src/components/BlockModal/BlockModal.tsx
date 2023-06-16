@@ -35,10 +35,8 @@ export function BlockModal({ children, onClose, open }: BlockModalProps) {
               alignItems="center"
               display="flex"
               flexDirection="column"
-              gap="6"
               height="full"
               justifyContent="center"
-              marginX="8"
             >
               {children}
             </Box>

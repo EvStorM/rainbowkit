@@ -15,7 +15,7 @@ const Home: NextPage = () => {
       <button
         onClick={() => {
           setChildren?.(
-            <div style={{ width: 480 }}>{new Date().getTime()}</div>
+            <div style={{ width: '100%' }}>{new Date().getTime()}</div>
           );
           openBlockModal?.();
         }}

@@ -1,61 +1,53 @@
-/* eslint-disable sort-keys-fix/sort-keys-fix */
-
-import { Chain, Wallet, getWalletConnectConnector, } from '@rainbow-me/rainbowkit';
-
-export interface bitKeepWalletOptions {
-  projectId?: string;
+import {
+  Chain,
+  Wallet,
+  getWalletConnectConnector,
+} from '@rainbow-me/rainbowkit';
+export interface MyWalletOptions {
+  projectId: string;
   chains: Chain[];
 }
-
 export const bitKeepWallet = ({
-  projectId,
   chains,
-}: bitKeepWalletOptions): Wallet => ({
-  id: 'bitKeep wallet',
-  name: 'bitKeep wallet',
-  iconUrl: async () => (await (import('./bitskiWallet.svg'))).default,
-  iconBackground: '#098de6',
+  projectId,
+}: MyWalletOptions): Wallet => ({
+  id: 'my-wallet',
+  name: 'My Wallet',
+  iconUrl: 'https://my-image.xyz',
+  iconBackground: '#0c2f78',
   downloadUrls: {
-    android: 'https://play.google.com/store/apps/details?id=im.token.app',
-    ios: 'https://itunes.apple.com/us/app/imtoken2/id1384798940',
-    mobile: 'https://token.im/download',
-    qrCode: 'https://token.im/download',
+    android: 'https://play.google.com/store/apps/details?id=my.wallet',
+    ios: 'https://apps.apple.com/us/app/my-wallet',
+    chrome: 'https://chrome.google.com/webstore/detail/my-wallet',
+    qrCode: 'https://my-wallet/qr',
   },
   createConnector: () => {
-    const connector = getWalletConnectConnector({ projectId, chains, version: "2" });
+    const connector = getWalletConnectConnector({ projectId, chains });
     return {
       connector,
       mobile: {
         getUri: async () => {
           const { uri } = (await connector.getProvider())?.connector;
-          return `imtokenv2://wc?uri=${encodeURIComponent(uri)}`;
+          return uri;
         },
       },
       qrCode: {
-        getUri: async () => (await connector.getProvider())?.connector.uri,
+        getUri: async () =>
+          (await connector.getProvider()).connector?.uri,
         instructions: {
-          learnMoreUrl:
-            typeof window !== 'undefined' &&
-              window.navigator.language.includes('zh')
-              ? 'https://support.token.im/hc/zh-cn/categories/360000925393'
-              : 'https://support.token.im/hc/en-us/categories/360000925393',
+          learnMoreUrl: 'https://my-wallet/learn-more',
           steps: [
             {
               description:
-                'Put imToken app on your home screen for faster access to your wallet.',
+                'We recommend putting My Wallet on your home screen for faster access to your wallet.',
               step: 'install',
-              title: 'Open the imToken app',
-            },
-            {
-              description: 'Create a new wallet or import an existing one.',
-              step: 'create',
-              title: 'Create or Import a Wallet',
+              title: 'Open the My Wallet app',
             },
             {
               description:
-                'Choose New Connection, then scan the QR code and confirm the prompt to connect.',
+                'After you scan, a connection prompt will appear for you to connect your wallet.',
               step: 'scan',
-              title: 'Tap Scanner Icon in top right corner',
+              title: 'Tap the scan button',
             },
           ],
         },

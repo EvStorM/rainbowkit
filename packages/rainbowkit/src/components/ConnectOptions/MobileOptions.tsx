@@ -152,19 +152,7 @@ enum MobileWalletStep {
 
 export function MobileOptions({ onClose }: { onClose: () => void }) {
   const titleId = 'rk_connect_title';
-  const chains = useRainbowKitChains();
   const wallets = useWalletConnectors();
-  const showuri = async () => {
-    const connector = getWalletConnectConnector({ chains, version: '2' });
-    const { uri } = (await connector.getProvider()).connector;
-    console.log(
-      '%c [ uri ]-150-「MobileOptions.tsx」',
-      'font-size:13px; background:#FFE47F; color:#000000;',
-      connector,
-      uri
-    );
-  };
-  showuri();
   let headerLabel = null;
   let walletContent = null;
   let headerBackgroundContrast = false;
@@ -187,20 +175,17 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
             paddingBottom="20"
             paddingTop="6"
           >
-            <Box display="flex" style={{ margin: '0 auto' }}>
-              {wallets
-                .filter(wallet => wallet.ready)
-                .map(wallet => {
-                  // showuri();
-                  return (
-                    <Box key={wallet.id} paddingX="20">
-                      <Box width="60">
-                        <WalletButton onClose={onClose} wallet={wallet} />
-                      </Box>
+            {wallets
+              .filter(wallet => wallet.ready)
+              .map(wallet => {
+                return (
+                  <Box key={wallet.id} paddingX="20">
+                    <Box width="60">
+                      <WalletButton onClose={onClose} wallet={wallet} />
                     </Box>
-                  );
-                })}
-            </Box>
+                  </Box>
+                );
+              })}
           </Box>
           <Box
             background="profileForeground"

@@ -160,8 +160,9 @@ export function ConnectDetail({
   changeWalletStep,
   compactModeEnabled,
   connectionError,
-  onClose,
   intl,
+  onClose,
+  qrCodeUri,
   reconnect,
   wallet,
 }: {
@@ -196,15 +197,6 @@ export function ConnectDetail({
     onClick?: () => void;
     href?: string;
   } | null = showWalletConnectModal
-    ? {
-        description:
-          `${intl.WalletConnect.tips}` ||
-          `Need the ${
-            compactModeEnabled ? '' : 'official'
-          } WalletConnect modal?`,
-        label: intl.openBtn,
-        onClick: showWalletConnectModal,
-    : hasQrCode
     ? {
         description: `${intl.nohaveTips} ${name}?`,
         label: intl.getBtn,

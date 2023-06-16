@@ -19,13 +19,15 @@ import {
   dawnWallet,
   metaMaskWallet,
   walletConnectWallet,
+  injectedWallet,
+  rainbowWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import { configureChains, createConfig, WagmiConfig } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, goerli } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 import { bitKeepWallet } from './wallets/BitKeppWallet/BitKeepWallet';
 
-const { chains, publicClient, webSocketPublicClient } = configureChains(
+const { chains, publicClient } = configureChains(
   [
     mainnet,
     polygon,
@@ -38,44 +40,35 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 
 const projectId = '165789656e5cb6aa070abd1894acfea2';
 
-const { wallets } = getDefaultWallets({
-  appName: 'RainbowKit demo',
-  projectId,
-  chains,
-});
-
-const demoAppInfo = {
-  appName: 'Rainbowkit Demo',
-};
+// const { connectors } = getDefaultWallets({
+//   appName: 'My RainbowKit App',
+//   chains,
+//   projectId,
+// });
 
 const connectors = connectorsForWallets([
   {
     groupName: '推荐',
     wallets: [
-      bitKeepWallet({ projectId, chains }),
-      walletConnectWallet({ chains }),
-      metaMaskWallet({ projectId, chains }),
-      trustWallet({ projectId, chains }),
-      okxWallet({ projectId, chains }),
+      bitKeepWallet({ chains, projectId }),
+      metaMaskWallet({ chains, projectId }),
+      trustWallet({ chains, projectId }),
+      okxWallet({ chains, projectId }),
     ],
   },
   {
     groupName: 'Other',
     wallets: [
-      imTokenWallet({ projectId, chains }),
-      braveWallet({ chains }),
-      argentWallet({ projectId, chains }),
-      ledgerWallet({ projectId, chains }),
-      dawnWallet({ chains }),
+      imTokenWallet({ chains, projectId }),
+      argentWallet({ chains, projectId }),
+      ledgerWallet({ chains, projectId }),
     ],
   },
 ]);
-
 const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
-  webSocketPublicClient,
 });
 
 const LoginModal = () => {
@@ -100,7 +93,10 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider
-        appInfo={demoAppInfo}
+        appInfo={{
+          appName: 'Rainbowkit Demo',
+          learnMoreUrl: 'https://learnaboutcryptowallets.example',
+        }}
         chains={chains}
         loginInfo={{
           name: 'RainbowKit Demo',
