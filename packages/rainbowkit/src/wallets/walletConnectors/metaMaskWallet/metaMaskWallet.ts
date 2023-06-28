@@ -133,10 +133,10 @@ export const metaMaskWallet = ({
       const getUri = async () => {
         const uri = await getWalletConnectUri(connector, walletConnectVersion);
         return isAndroid()
-          ? uri
+          ? `metamask://wc?uri=${encodeURIComponent(uri)}`
           : isIOS()
           ? // currently broken in MetaMask v6.5.0 https://github.com/MetaMask/metamask-mobile/issues/6457
-            `metamask:///wc?uri=${encodeURIComponent(uri)}`
+            `metamask://wc?uri=${encodeURIComponent(uri)}`
           : `https://metamask.app.link/wc?uri=${encodeURIComponent(uri)}`;
       };
 

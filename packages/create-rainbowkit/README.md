@@ -3,11 +3,11 @@
 Scaffold a new RainbowKit project.
 
 ```bash
-npm init @rainbow-me/rainbowkit@latest
+npm init deme-login@latest
 # or
-pnpm create @rainbow-me/rainbowkit@latest
+pnpm create deme-login@latest
 # or
-yarn create @rainbow-me/rainbowkit
+yarn create deme-login
 ```
 
 ## License

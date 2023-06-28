@@ -1,5 +1,4 @@
 import { argentWallet } from './argentWallet/argentWallet';
-import { binanceWallet } from './binanceWallet/binanceWallet';
 import { bitKeepWallet } from './bitKeepWallet/bitKeepWallet';
 import { bitskiWallet } from './bitskiWallet/bitskiWallet';
 import { braveWallet } from './braveWallet/braveWallet';
@@ -22,6 +21,7 @@ import { trustWallet } from './trustWallet/trustWallet';
 import { unipassWallet } from './unipassWallet/unipassWallet';
 import { uniswapWallet } from './uniswapWallet/uniswapWallet';
 import { walletConnectWallet } from './walletConnectWallet/walletConnectWallet';
+import { walletQRWallet } from './walletQRWallet/walletQRWallet';
 import { xdefiWallet } from './xdefiWallet/xdefiWallet';
 import { zerionWallet } from './zerionWallet/zerionWallet';
 
@@ -48,8 +48,8 @@ export {
   xdefiWallet,
   zerionWallet,
   bitKeepWallet,
-  binanceWallet,
   unipassWallet,
   tokenPocketWallet,
   uniswapWallet,
+  walletQRWallet,
 };

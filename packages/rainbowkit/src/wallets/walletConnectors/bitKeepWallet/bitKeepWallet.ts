@@ -1,6 +1,7 @@
 import type { InjectedConnectorOptions } from '@wagmi/core/connectors/injected';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
+import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
 import { isAndroid } from '../../../utils/isMobile';
 import { Wallet } from '../../Wallet';
 import { getWalletConnectConnector } from '../../getWalletConnectConnector';
@@ -100,13 +101,12 @@ export const bitKeepWallet = ({
             chains,
             options: { shimDisconnect },
           });
+
       const getUri = async () => {
-        const uri = (await connector.getProvider())?.connector?.uri;
-        return isAndroid()
-          ? `bitkeep://?action=connect&connectType=wc&value=${encodeURIComponent(
-              uri
-            )}`
-          : `https://bkcode.vip?value=${encodeURIComponent(uri)}`;
+        const uri = await getWalletConnectUri(connector, '2');
+        const linkUrl = `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
+        // const linkUrl = `https://bkcode.vip?value=${encodeURIComponent(uri)}`;
+        return isAndroid() ? linkUrl : linkUrl;
       };
       return {
         connector,

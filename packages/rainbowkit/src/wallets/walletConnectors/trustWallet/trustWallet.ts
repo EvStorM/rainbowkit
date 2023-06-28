@@ -34,7 +34,6 @@ function getTrustWalletInjectedProvider(): Window['ethereum'] {
   const isTrustWallet = (ethereum: NonNullable<Window['ethereum']>) => {
     // Identify if Trust Wallet injected provider is present.
     const trustWallet = !!ethereum.isTrust;
-
     return trustWallet;
   };
   if (typeof window !== 'undefined' && window['trustWallet']) {
@@ -106,7 +105,6 @@ export const trustWallet = ({
 
       const getUriQR = async () => {
         const uri = await getWalletConnectUri(connector, walletConnectVersion);
-
         return uri;
       };
 

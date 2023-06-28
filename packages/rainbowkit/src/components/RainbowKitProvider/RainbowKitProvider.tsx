@@ -70,6 +70,8 @@ export interface RainbowKitProviderProps {
   coolMode?: boolean;
   avatar?: AvatarComponent;
   modalSize?: ModalSizes;
+  mobileQRCode?: boolean;
+  mobileQRCodeIcon?: string | (() => Promise<string>);
 }
 
 const defaultTheme = lightTheme();
@@ -84,6 +86,8 @@ export function RainbowKitProvider({
   initialChain,
   loginInfo,
   loginModal,
+  mobileQRCode = false,
+  mobileQRCodeIcon,
   modalSize = ModalSizeOptions.WIDE,
   showRecentTransactions = false,
   theme = defaultTheme,
@@ -105,6 +109,8 @@ export function RainbowKitProvider({
     ...appInfo,
     loginInfo,
     loginModal,
+    mobileQRCode,
+    mobileQRCodeIcon,
   };
 
   const avatarContext = avatar ?? defaultAvatar;

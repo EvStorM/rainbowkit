@@ -1,5 +1,5 @@
 {
-  "name": "@rainbow-me/rainbowkit-siwe-next-auth",
+  "name": "deme-login-siwe-next-auth",
   "version": "0.2.0",
   "description": "RainbowKit authentication adapter for Sign-In with Ethereum and NextAuth.js",
   "files": [
@@ -29,13 +29,13 @@
   "author": "Rainbow",
   "license": "MIT",
   "peerDependencies": {
-    "@rainbow-me/rainbowkit": "1.0.x",
+    "deme-login": "1.0.x",
     "next-auth": ">=4.10.2 <=4.20.1",
     "react": ">=17",
     "siwe": "^2.1.4"
   },
   "devDependencies": {
-    "@rainbow-me/rainbowkit": "workspace:*",
+    "deme-login": "workspace:*",
     "siwe": "^2.1.4",
     "ethers": "^5.6.8"
   },

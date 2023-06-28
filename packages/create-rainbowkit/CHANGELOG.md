@@ -37,7 +37,7 @@
   Give RainbowKit and [wagmi v1](https://wagmi.sh/react/migration-guide#1xx-breaking-changes) a try today:
 
   ```bash
-  yarn create @rainbow-me/rainbowkit
+  yarn create deme-login
   ```
 
 ## 0.1.11

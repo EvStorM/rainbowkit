@@ -48,4 +48,6 @@ export const AppContext = createContext<{
   learnMoreUrl?: string;
   disclaimer?: DisclaimerComponent;
   loginInfo?: loginInfoType;
+  mobileQRCode?: boolean;
+  mobileQRCodeIcon?: string | (() => Promise<string>);
 }>(defaultAppInfo);

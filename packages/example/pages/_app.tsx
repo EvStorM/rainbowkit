@@ -1,5 +1,5 @@
 import './global.css';
-import '@rainbow-me/rainbowkit/styles.css';
+import 'deme-login/styles.css';
 import {
   AvatarComponent,
   connectorsForWallets,
@@ -8,7 +8,7 @@ import {
   lightTheme,
   midnightTheme,
   RainbowKitProvider,
-} from '@rainbow-me/rainbowkit';
+} from 'deme-login';
 import {
   bitKeepWallet,
   imTokenWallet,
@@ -17,11 +17,13 @@ import {
   tokenPocketWallet,
   trustWallet,
   walletConnectWallet,
-} from '@rainbow-me/rainbowkit/wallets';
+  walletQRWallet,
+  zerionWallet,
+} from 'deme-login/wallets';
 import {
   GetSiweMessageOptions,
   RainbowKitSiweNextAuthProvider,
-} from '@rainbow-me/rainbowkit-siwe-next-auth';
+} from 'deme-login-siwe-next-auth';
 
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -69,7 +71,6 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 );
 
 const projectId = '70b8e2cc9a86d6c62c209bf08df51431';
-
 const connectors = connectorsForWallets([
   {
     groupName: '推荐',
@@ -81,6 +82,8 @@ const connectors = connectorsForWallets([
       imTokenWallet({ chains, projectId }),
       trustWallet({ chains, projectId }),
       tokenPocketWallet({ chains, projectId }),
+      zerionWallet({ chains, projectId }),
+      walletQRWallet({ chains, projectId }),
     ],
   },
 ]);
@@ -251,6 +254,7 @@ function RainbowKitApp({
         initialChain={selectedInitialChainId}
         loginInfo={loginInfo}
         loginModal={<LoginModal />}
+        mobileQRCode
         modalSize={modalSize}
         showRecentTransactions={showRecentTransactions}
         theme={currentTheme({

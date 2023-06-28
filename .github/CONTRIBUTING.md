@@ -149,15 +149,15 @@ Once you’ve pushed the tag, you can create a new release on GitHub.
 #### If you published `rainbowkit`:
 
 - Go to [GitHub’s new release form.](https://github.com/rainbow-me/rainbowkit/releases/new)
-- Select the latest version tag for `@rainbow-me/rainbowkit`.
-- Set the title to `@rainbow-me/rainbowkit@x.x.x` (substituting the latest version)
+- Select the latest version tag for `deme-login`.
+- Set the title to `deme-login@x.x.x` (substituting the latest version)
 - Copy the Markdown content below the latest version heading from [RainbowKit’s `CHANGELOG.md`](../packages/rainbowkit/CHANGELOG.md)
 
 #### If you published `rainbowkit-siwe-next-auth`:
 
 - Go to [GitHub’s new release form.](https://github.com/rainbow-me/rainbowkit/releases/new)
-- Select the latest version tag for `@rainbow-me/rainbowkit-siwe-next-auth`.
-- Set the title to `@rainbow-me/rainbowkit-siwe-next-auth@x.x.x` (substituting the latest version)
+- Select the latest version tag for `deme-login-siwe-next-auth`.
+- Set the title to `deme-login-siwe-next-auth@x.x.x` (substituting the latest version)
 - Copy the Markdown content below the latest version heading from [rainbowkit-siwe-next-auth’s `CHANGELOG.md`](../packages/rainbowkit-siwe-next-auth/CHANGELOG.md)
 
 #### If you published `create-rainbowkit`:

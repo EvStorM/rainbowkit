@@ -1,6 +1,7 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
+import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
 import { isMobile } from '../../../utils/isMobile';
 import { Wallet } from '../../Wallet';
 import { getWalletConnectConnector } from '../../getWalletConnectConnector';
@@ -41,7 +42,7 @@ export const tokenPocketWallet = ({
         : new InjectedConnector({ chains });
 
       const getUri = async () => {
-        const uri = (await connector.getProvider())?.connector?.uri;
+        const uri = await getWalletConnectUri(connector, '2');
         return isMobile()
           ? `tpoutside://wc?uri=${encodeURIComponent(uri)}`
           : uri;

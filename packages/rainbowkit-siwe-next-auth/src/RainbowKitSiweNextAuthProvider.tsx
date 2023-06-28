@@ -1,7 +1,7 @@
 import {
   createAuthenticationAdapter,
   RainbowKitAuthenticationProvider,
-} from '@rainbow-me/rainbowkit';
+} from 'deme-login';
 import { getCsrfToken, signIn, signOut, useSession } from 'next-auth/react';
 import React, { ReactNode, useMemo } from 'react';
 import { SiweMessage } from 'siwe';

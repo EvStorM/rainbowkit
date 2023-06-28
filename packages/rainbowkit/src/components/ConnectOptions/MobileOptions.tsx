@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { touchableStyles } from '../../css/touchableStyles';
+import { getWalletConnectConnector } from '../../wallets/getWalletConnectConnector';
 import {
   useWalletConnectors,
   WalletConnector,
@@ -152,20 +153,23 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   const wallets = useWalletConnectors();
   let headerLabel = null;
   let walletContent = null;
-  const { loginInfo, loginModal } = useContext(AppContext);
+  const { loginInfo, mobileQRCode, mobileQRCodeIcon } = useContext(AppContext);
   let headerBackgroundContrast = false;
   let headerBackButtonLink: MobileWalletStep | null = null;
   let chains = useRainbowKitChains();
-  const [qrCodeUri, setQrCodeUri] = useState<string>();
+  const [qrCodeUri, setQrCodeUri] = useState<string>('null');
   const [selectedWallet, setSelectedWallet] = useState<WalletConnector>();
   const [walletStep, setWalletStep] = useState<MobileWalletStep>(
     MobileWalletStep.Connect
   );
   const selectWallet = (wallet: WalletConnector) => {
     if (wallet.ready) {
-      wallet?.connect?.()?.catch(() => {
-        // setConnectionError(true);
-      });
+      wallet
+        ?.connect?.()
+        ?.catch(() => {
+          // setConnectionError(true);
+        })
+        .then(() => {});
       // We need to guard against "onConnecting" callbacks being fired
       // multiple times since connector instances can be shared between
       // wallets. Ideally wagmi would let us scope the callback to the
@@ -174,22 +178,21 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
       wallet?.onConnecting?.(async () => {
         if (callbackFired) return;
         callbackFired = true;
-        const sWallet = wallets.find(w => wallet.id === w.id);
-        const uri = await sWallet?.qrCode?.getUri();
-        setQrCodeUri(uri);
+        const uri = await wallet?.qrCode?.getUri();
+        setQrCodeUri(uri ?? 'null');
 
         // This timeout prevents the UI from flickering if connection is instant,
         // otherwise users will see a flash of the "connecting" state.
         setTimeout(
           () => {
-            setSelectedWallet(sWallet);
+            setSelectedWallet(wallet);
           },
           uri ? 0 : 50
         );
 
         // If the WalletConnect request is rejected, restart the wallet
         // selection flow to create a new connection with a new QR code
-        const provider = await sWallet?.connector.getProvider();
+        const provider = await wallet?.connector.getProvider();
         const connection = provider?.signer?.connection;
         if (connection?.on && connection?.off) {
           const handleConnectionClose = () => {
@@ -209,16 +212,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
     }
   };
   const getWCUrl = async () => {
-    // const connector = getWalletConnectConnector({
-    //   chains,
-    //   options: {
-    //     showQrModal: false,
-    //   },
-    //   projectId,
-    //   version: '2',
-    // });
-    // const getUri = async () => getWalletConnectUri(connector, '2');
-    const sWallet = wallets.find(w => 'walletConnect' === w.id);
+    const sWallet = wallets.find(w => 'walletConnectQR' === w.id);
     if (sWallet) {
       selectWallet(sWallet);
     }
@@ -232,7 +226,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   switch (walletStep) {
     case MobileWalletStep.Connect: {
       headerLabel = 'Connect a Wallet';
-      headerBackgroundContrast = true;
+      headerBackgroundContrast = selectedWallet ? true : true;
       walletContent = (
         <Box>
           <Box
@@ -240,10 +234,11 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
             className={styles.scroll}
             display="flex"
             paddingBottom="20"
-            paddingTop="6"
+            paddingTop="20"
           >
             {wallets
               .filter(wallet => wallet.ready)
+              .filter(wallet => wallet.id !== 'walletConnectQR')
               .map(wallet => {
                 return (
                   <Box key={wallet.id} paddingX="20">
@@ -254,23 +249,25 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
                 );
               })}
           </Box>
-          <Box
-            background="profileForeground"
-            display="flex"
-            justifyContent="center"
-            paddingBottom="36"
-            paddingTop="6"
-          >
-            {qrCodeUri && (
+          {mobileQRCode && (
+            <Box
+              background="profileForeground"
+              display="flex"
+              justifyContent="center"
+              padding="10"
+              paddingBottom="36"
+              paddingTop="6"
+            >
               <QRCode
                 logoBackground="profileForeground"
                 logoSize={72}
-                logoUrl={loginInfo?.iconUrl}
-                size={290}
+                logoUrl={mobileQRCodeIcon ?? loginInfo?.iconUrl}
+                padding="16"
+                size={260}
                 uri={qrCodeUri}
               />
-            )}
-          </Box>
+            </Box>
+          )}
         </Box>
       );
       break;

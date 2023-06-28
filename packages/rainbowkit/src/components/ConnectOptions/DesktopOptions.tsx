@@ -95,12 +95,6 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
 
         const sWallet = wallets.find(w => wallet.id === w.id);
         const uri = await sWallet?.qrCode?.getUri();
-        console.log(
-          '%c [ uri ]-103-「DesktopOptions.tsx」',
-          'font-size:13px; background:#FFE47F; color:#000000;',
-          sWallet,
-          uri
-        );
         setQrCodeUri(uri);
 
         // This timeout prevents the UI from flickering if connection is instant,
@@ -357,21 +351,23 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
                       </Box>
                     ) : null}
                     <Box display="flex" flexDirection="column" gap="4">
-                      {wallets.map(wallet => {
-                        return (
-                          <ModalSelection
-                            currentlySelected={wallet.id === selectedOptionId}
-                            iconBackground={wallet.iconBackground}
-                            iconUrl={wallet.iconUrl}
-                            key={wallet.id}
-                            name={wallet.name}
-                            onClick={() => selectWallet(wallet)}
-                            ready={wallet.ready}
-                            recent={wallet.recent}
-                            testId={`wallet-option-${wallet.id}`}
-                          />
-                        );
-                      })}
+                      {wallets
+                        .filter(wallet => wallet.id !== 'walletConnectQR')
+                        .map(wallet => {
+                          return (
+                            <ModalSelection
+                              currentlySelected={wallet.id === selectedOptionId}
+                              iconBackground={wallet.iconBackground}
+                              iconUrl={wallet.iconUrl}
+                              key={wallet.id}
+                              name={wallet.name}
+                              onClick={() => selectWallet(wallet)}
+                              ready={wallet.ready}
+                              recent={wallet.recent}
+                              testId={`wallet-option-${wallet.id}`}
+                            />
+                          );
+                        })}
                     </Box>
                   </Fragment>
                 )

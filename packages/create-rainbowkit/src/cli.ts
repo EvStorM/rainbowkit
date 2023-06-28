@@ -48,7 +48,7 @@ async function run() {
     const options = program.opts();
 
     const reservedPackageNames = [
-      '@rainbow-me/rainbowkit',
+      'deme-login',
       'wagmi',
       'viem',
       'next',
@@ -163,7 +163,7 @@ async function run() {
 
     if (process.env.INSTALL_WORKSPACE_RAINBOWKIT !== 'true') {
       // Remove RainbowKit workspace dependency so we can install latest
-      delete pkgJson.dependencies['@rainbow-me/rainbowkit'];
+      delete pkgJson.dependencies['deme-login'];
     }
 
     await fs.writeFile(
@@ -196,7 +196,7 @@ async function run() {
         packageManager,
         [
           packageManager === 'yarn' ? 'add' : 'install',
-          '@rainbow-me/rainbowkit',
+          'deme-login',
         ],
         {
           cwd: targetPath,

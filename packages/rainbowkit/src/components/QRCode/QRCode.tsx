@@ -3,6 +3,7 @@ import React, { ReactElement, useMemo } from 'react';
 import { AsyncImage } from '../AsyncImage/AsyncImage';
 import { Box, BoxProps } from '../Box/Box';
 import { QRCodeBackgroundClassName } from '../ConnectOptions/DesktopOptions.css';
+import { qrSkeleton } from './QRCode.css';
 
 const generateMatrix = (
   value: string,
@@ -29,7 +30,8 @@ type Props = {
   logoMargin?: number;
   logoSize?: number;
   size?: number;
-  uri: string;
+  uri?: string;
+  padding?: BoxProps['padding'];
 };
 
 export function QRCode({
@@ -38,15 +40,16 @@ export function QRCode({
   logoMargin = 10,
   logoSize = 50,
   logoUrl,
+  padding,
   size: sizeProp = 200,
   uri,
 }: Props) {
-  const padding: NonNullable<BoxProps['padding']> = '20';
-  const size = sizeProp - parseInt(padding, 10) * 2;
+  const paddingProp: NonNullable<BoxProps['padding']> = padding ?? '20';
+  const size = sizeProp - parseInt(paddingProp, 10) * 2;
 
   const dots = useMemo(() => {
     const dots: ReactElement[] = [];
-    const matrix = generateMatrix(uri, ecl);
+    const matrix = generateMatrix(uri ?? '', ecl);
     const cellSize = size / matrix.length;
     let qrList = [
       { x: 0, y: 0 },
@@ -119,53 +122,73 @@ export function QRCode({
   return (
     <Box
       // borderColor="generalBorder"
-      // borderRadius="menuButton"
+      borderRadius="10"
       // borderStyle="solid"
       // borderWidth="1"
       className={QRCodeBackgroundClassName}
-      // padding={padding}
       width="max"
     >
       <Box
+        className={uri === 'null' ? qrSkeleton : ''}
+        padding={paddingProp}
         style={{
-          height: size,
+          height: size + parseInt(paddingProp, 10) * 2,
           userSelect: 'none',
-          width: size,
+          width: size + parseInt(paddingProp, 10) * 2,
         }}
-        userSelect="none"
       >
-        <Box
-          display="flex"
-          justifyContent="center"
-          position="relative"
-          style={{
-            height: 0,
-            top: logoPosition,
-            width: size,
-          }}
-          width="full"
-        >
-          <AsyncImage
-            background={logoBackground}
-            borderColor={{ custom: 'rgba(0, 0, 0, 0.06)' }}
-            borderRadius="13"
-            height={logoSize}
-            src={logoUrl}
-            width={logoSize}
+        {uri === 'null' ? (
+          <Box
+            style={{
+              height: size,
+              userSelect: 'none',
+              width: size,
+            }}
+            userSelect="none"
           />
-        </Box>
-        <svg height={size} style={{ all: 'revert' }} width={size}>
-          <defs>
-            <clipPath id="clip-wrapper">
-              <rect height={logoWrapperSize} width={logoWrapperSize} />
-            </clipPath>
-            <clipPath id="clip-logo">
-              <rect height={logoSize} width={logoSize} />
-            </clipPath>
-          </defs>
-          <rect fill="transparent" height={size} width={size} />
-          {dots}
-        </svg>
+        ) : (
+          <Box
+            style={{
+              height: size,
+              userSelect: 'none',
+              width: size,
+            }}
+            userSelect="none"
+          >
+            <Box
+              display="flex"
+              justifyContent="center"
+              position="relative"
+              style={{
+                height: 0,
+                top: logoPosition,
+                width: size,
+              }}
+              width="full"
+            >
+              <AsyncImage
+                background={logoBackground}
+                borderColor={{ custom: 'rgba(0, 0, 0, 0.06)' }}
+                borderRadius="13"
+                height={logoSize}
+                src={logoUrl}
+                width={logoSize}
+              />
+            </Box>
+            <svg height={size} style={{ all: 'revert' }} width={size}>
+              <defs>
+                <clipPath id="clip-wrapper">
+                  <rect height={logoWrapperSize} width={logoWrapperSize} />
+                </clipPath>
+                <clipPath id="clip-logo">
+                  <rect height={logoSize} width={logoSize} />
+                </clipPath>
+              </defs>
+              <rect fill="transparent" height={size} width={size} />
+              {dots}
+            </svg>
+          </Box>
+        )}
       </Box>
     </Box>
   );
