@@ -1,18 +1,15 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { touchableStyles } from '../../css/touchableStyles';
-import { isIOS } from '../../utils/isMobile';
-import { getWalletConnectConnector } from '../../wallets/getWalletConnectConnector';
 import {
   useWalletConnectors,
   WalletConnector,
 } from '../../wallets/useWalletConnectors';
 import { AsyncImage } from '../AsyncImage/AsyncImage';
 import { Box } from '../Box/Box';
-import { ActionButton } from '../Button/ActionButton';
 import { CloseButton } from '../CloseButton/CloseButton';
 import { BackIcon } from '../Icons/Back';
 import { QRCode } from '../QRCode/QRCode';
-import { useChainModal } from '../RainbowKitProvider/ModalContext';
+import { AppContext } from '../RainbowKitProvider/AppContext';
 import { useRainbowKitChains } from '../RainbowKitProvider/RainbowKitChainContext';
 import { useCoolMode } from '../RainbowKitProvider/useCoolMode';
 import { setWalletConnectDeepLink } from '../RainbowKitProvider/walletConnectDeepLink';
@@ -38,6 +35,7 @@ function WalletButton({
     ready,
     shortName,
   } = wallet;
+
   const getMobileUri = mobile?.getUri;
   const coolModeRef = useCoolMode(iconUrl);
 
@@ -51,7 +49,6 @@ function WalletButton({
       onClick={useCallback(async () => {
         if (id === 'walletConnect') onClose?.();
         connect?.();
-
         // We need to guard against "onConnecting" callbacks being fired
         // multiple times since connector instances can be shared between
         // wallets. Ideally wagmi would let us scope the callback to the
@@ -155,13 +152,83 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   const wallets = useWalletConnectors();
   let headerLabel = null;
   let walletContent = null;
+  const { loginInfo, loginModal } = useContext(AppContext);
   let headerBackgroundContrast = false;
   let headerBackButtonLink: MobileWalletStep | null = null;
-
+  let chains = useRainbowKitChains();
+  const [qrCodeUri, setQrCodeUri] = useState<string>();
+  const [selectedWallet, setSelectedWallet] = useState<WalletConnector>();
   const [walletStep, setWalletStep] = useState<MobileWalletStep>(
     MobileWalletStep.Connect
   );
-  const ios = isIOS();
+  const selectWallet = (wallet: WalletConnector) => {
+    if (wallet.ready) {
+      wallet?.connect?.()?.catch(() => {
+        // setConnectionError(true);
+      });
+      // We need to guard against "onConnecting" callbacks being fired
+      // multiple times since connector instances can be shared between
+      // wallets. Ideally wagmi would let us scope the callback to the
+      // specific "connect" call, but this will work in the meantime.
+      let callbackFired = false;
+      wallet?.onConnecting?.(async () => {
+        if (callbackFired) return;
+        callbackFired = true;
+        const sWallet = wallets.find(w => wallet.id === w.id);
+        const uri = await sWallet?.qrCode?.getUri();
+        setQrCodeUri(uri);
+
+        // This timeout prevents the UI from flickering if connection is instant,
+        // otherwise users will see a flash of the "connecting" state.
+        setTimeout(
+          () => {
+            setSelectedWallet(sWallet);
+          },
+          uri ? 0 : 50
+        );
+
+        // If the WalletConnect request is rejected, restart the wallet
+        // selection flow to create a new connection with a new QR code
+        const provider = await sWallet?.connector.getProvider();
+        const connection = provider?.signer?.connection;
+        if (connection?.on && connection?.off) {
+          const handleConnectionClose = () => {
+            removeHandlers();
+            selectWallet(wallet);
+          };
+          const removeHandlers = () => {
+            connection.off('close', handleConnectionClose);
+            connection.off('open', removeHandlers);
+          };
+          connection.on('close', handleConnectionClose);
+          connection.on('open', removeHandlers);
+        }
+      });
+    } else {
+      // setSelectedWallet(wallet);
+    }
+  };
+  const getWCUrl = async () => {
+    // const connector = getWalletConnectConnector({
+    //   chains,
+    //   options: {
+    //     showQrModal: false,
+    //   },
+    //   projectId,
+    //   version: '2',
+    // });
+    // const getUri = async () => getWalletConnectUri(connector, '2');
+    const sWallet = wallets.find(w => 'walletConnect' === w.id);
+    if (sWallet) {
+      selectWallet(sWallet);
+    }
+  };
+  useEffect(() => {
+    if (chains.length > 0) {
+      getWCUrl();
+    }
+  }, [chains]);
+
   switch (walletStep) {
     case MobileWalletStep.Connect: {
       headerLabel = 'Connect a Wallet';
@@ -190,128 +257,19 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
           <Box
             background="profileForeground"
             display="flex"
-            paddingBottom="20"
+            justifyContent="center"
+            paddingBottom="36"
             paddingTop="6"
           >
-            <QRCode
-              logoBackground="profileForeground"
-              logoSize={72}
-              size={290}
-              uri="qrCodeUri"
-            />
-          </Box>
-        </Box>
-      );
-      break;
-    }
-    case MobileWalletStep.Get: {
-      headerLabel = 'Get a Wallet';
-      headerBackButtonLink = MobileWalletStep.Connect;
-
-      const mobileWallets = wallets
-        ?.filter(
-          wallet =>
-            wallet.downloadUrls?.ios ||
-            wallet.downloadUrls?.android ||
-            wallet.downloadUrls?.mobile
-        )
-        ?.splice(0, 3);
-
-      walletContent = (
-        <Box>
-          <Box
-            alignItems="center"
-            display="flex"
-            flexDirection="column"
-            height="full"
-            marginBottom="36"
-            marginTop="5"
-            paddingTop="12"
-            width="full"
-          >
-            {mobileWallets.map((wallet, index) => {
-              const { downloadUrls, iconBackground, iconUrl, name } = wallet;
-
-              if (
-                !downloadUrls?.ios &&
-                !downloadUrls?.android &&
-                !downloadUrls?.mobile
-              ) {
-                return null;
-              }
-
-              return (
-                <Box
-                  display="flex"
-                  gap="16"
-                  key={wallet.id}
-                  paddingX="20"
-                  width="full"
-                >
-                  <Box style={{ minHeight: 48, minWidth: 48 }}>
-                    <AsyncImage
-                      background={iconBackground}
-                      borderColor="generalBorder"
-                      borderRadius="10"
-                      height="48"
-                      src={iconUrl}
-                      width="48"
-                    />
-                  </Box>
-                  <Box display="flex" flexDirection="column" width="full">
-                    <Box alignItems="center" display="flex" height="48">
-                      <Box width="full">
-                        <Text color="modalText" size="18" weight="bold">
-                          {name}
-                        </Text>
-                      </Box>
-                      <ActionButton
-                        href={
-                          (ios ? downloadUrls?.ios : downloadUrls?.android) ||
-                          downloadUrls?.mobile
-                        }
-                        label="GET"
-                        size="small"
-                        type="secondary"
-                      />
-                    </Box>
-                    {index < mobileWallets.length - 1 && (
-                      <Box
-                        background="generalBorderDim"
-                        height="1"
-                        marginY="10"
-                        width="full"
-                      />
-                    )}
-                  </Box>
-                </Box>
-              );
-            })}
-          </Box>
-          {/* spacer */}
-          <Box style={{ marginBottom: '42px' }} />
-          <Box
-            alignItems="center"
-            display="flex"
-            flexDirection="column"
-            gap="36"
-            paddingX="36"
-            style={{ textAlign: 'center' }}
-          >
-            <Box
-              display="flex"
-              flexDirection="column"
-              gap="12"
-              textAlign="center"
-            >
-              <Text color="modalText" size="16" weight="bold">
-                Not what you&rsquo;re looking for?
-              </Text>
-              <Text color="modalTextSecondary" size="16">
-                Select a wallet on the main screen to get started with a
-                different wallet provider.
-              </Text>
-            </Box>
+            {qrCodeUri && (
+              <QRCode
+                logoBackground="profileForeground"
+                logoSize={72}
+                logoUrl={loginInfo?.iconUrl}
+                size={290}
+                uri={qrCodeUri}
+              />
+            )}
           </Box>
         </Box>
       );
@@ -320,7 +278,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <Box display="flex" flexDirection="column">
+    <Box background="profileForeground" display="flex" flexDirection="column">
       {/* header section */}
       <Box
         background={

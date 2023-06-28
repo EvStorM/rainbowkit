@@ -95,6 +95,12 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
 
         const sWallet = wallets.find(w => wallet.id === w.id);
         const uri = await sWallet?.qrCode?.getUri();
+        console.log(
+          '%c [ uri ]-103-「DesktopOptions.tsx」',
+          'font-size:13px; background:#FFE47F; color:#000000;',
+          sWallet,
+          uri
+        );
         setQrCodeUri(uri);
 
         // This timeout prevents the UI from flickering if connection is instant,
@@ -216,8 +222,8 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
           changeWalletStep={changeWalletStep}
           compactModeEnabled
           connectionError={connectionError}
-          onClose={onClose}
           intl={intl}
+          onClose={onClose}
           qrCodeUri={qrCodeUri}
           reconnect={connectToWallet}
           wallet={selectedWallet}

@@ -61,7 +61,10 @@ export const walletConnectWallet = ({
     return {
       connector,
       ...(ios
-        ? {}
+        ? {
+            mobile: { getUri },
+            qrCode: { getUri },
+          }
         : {
             mobile: { getUri },
             qrCode: { getUri },

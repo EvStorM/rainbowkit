@@ -12,7 +12,7 @@ import type {
 
 declare global {
   interface Window {
-    trustwallet: Window['ethereum'];
+    trustWallet: Window['ethereum'];
   }
 }
 
@@ -37,7 +37,9 @@ function getTrustWalletInjectedProvider(): Window['ethereum'] {
 
     return trustWallet;
   };
-
+  if (typeof window !== 'undefined' && window['trustWallet']) {
+    return window['trustWallet'];
+  }
   const injectedProviderExist =
     typeof window !== 'undefined' && typeof window.ethereum !== 'undefined';
 
@@ -45,15 +47,11 @@ function getTrustWalletInjectedProvider(): Window['ethereum'] {
   if (!injectedProviderExist) {
     return;
   }
-
   // Trust Wallet injected provider is available in the global scope.
   // There are cases that some cases injected providers can replace window.ethereum
   // without updating the ethereum.providers array. To prevent issues where
   // the TW connector does not recognize the provider when TW extension is installed,
   // we begin our checks by relying on TW's global object.
-  if (window['trustwallet']) {
-    return window['trustwallet'];
-  }
 
   // Trust Wallet was injected into window.ethereum.
   if (isTrustWallet(window.ethereum!)) {
@@ -103,7 +101,6 @@ export const trustWallet = ({
     createConnector: () => {
       const getUriMobile = async () => {
         const uri = await getWalletConnectUri(connector, walletConnectVersion);
-
         return `trust://wc?uri=${encodeURIComponent(uri)}`;
       };
 

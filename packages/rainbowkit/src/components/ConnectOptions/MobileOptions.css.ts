@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
 
 export const scroll = style({
-  overflow: 'scroll',
+  overflow: 'auto',
   scrollbarWidth: 'none',
   selectors: {
     '&::-webkit-scrollbar': {

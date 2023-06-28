@@ -33,7 +33,7 @@ type Props = {
 };
 
 export function QRCode({
-  ecl = 'M',
+  ecl = 'Q',
   logoBackground,
   logoMargin = 10,
   logoSize = 50,
@@ -97,11 +97,11 @@ export function QRCode({
             ) {
               dots.push(
                 <circle
-                  cx={i * cellSize + cellSize / 2}
-                  cy={j * cellSize + cellSize / 2}
+                  cx={i * cellSize + cellSize / 1.5}
+                  cy={j * cellSize + cellSize / 1.5}
                   fill="black"
                   key={`circle-${i}-${j}`}
-                  r={cellSize / 3} // calculate size of single dots
+                  r={cellSize / 2} // calculate size of single dots
                 />
               );
             }

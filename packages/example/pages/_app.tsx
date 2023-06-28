@@ -5,26 +5,18 @@ import {
   connectorsForWallets,
   darkTheme,
   DisclaimerComponent,
-  getDefaultWallets,
   lightTheme,
   midnightTheme,
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
 import {
-  argentWallet,
-  bitskiWallet,
-  dawnWallet,
+  bitKeepWallet,
   imTokenWallet,
-  ledgerWallet,
-  mewWallet,
+  metaMaskWallet,
   okxWallet,
-  omniWallet,
-  phantomWallet,
-  rabbyWallet,
-  tahoWallet,
+  tokenPocketWallet,
   trustWallet,
-  xdefiWallet,
-  zerionWallet,
+  walletConnectWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import {
   GetSiweMessageOptions,
@@ -76,33 +68,19 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
   ]
 );
 
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '';
-
-const { wallets } = getDefaultWallets({
-  appName: 'RainbowKit demo',
-  chains,
-  projectId,
-});
+const projectId = '70b8e2cc9a86d6c62c209bf08df51431';
 
 const connectors = connectorsForWallets([
-  ...wallets,
   {
-    groupName: 'Other',
+    groupName: '推荐',
     wallets: [
-      argentWallet({ chains, projectId }),
-      bitskiWallet({ chains }),
-      dawnWallet({ chains }),
-      imTokenWallet({ chains, projectId }),
-      ledgerWallet({ chains, projectId }),
-      mewWallet({ chains }),
+      metaMaskWallet({ chains, projectId }),
+      bitKeepWallet({ chains, projectId }),
       okxWallet({ chains, projectId }),
-      omniWallet({ chains, projectId }),
-      phantomWallet({ chains }),
-      rabbyWallet({ chains }),
-      tahoWallet({ chains }),
+      walletConnectWallet({ chains, projectId }),
+      imTokenWallet({ chains, projectId }),
       trustWallet({ chains, projectId }),
-      xdefiWallet({ chains }),
-      zerionWallet({ chains, projectId }),
+      tokenPocketWallet({ chains, projectId }),
     ],
   },
 ]);
@@ -118,6 +96,38 @@ const demoAppInfo = {
   appName: 'Rainbowkit Demo',
 };
 
+const loginInfo = {
+  iconUrl:
+    'https://img2.baidu.com/it/u=2685277441,3392388146&fm=253&fmt=auto&app=120&f=JPEG?w=400&h=400',
+  id: '2873',
+  intl: {
+    closeBtn: '取消',
+    connectTitle: '扫码链接',
+    errorWallet: 'string',
+    getBtn: '获取',
+    haveTips: 'string',
+    nohaveTips: '没有',
+    openBtn: 'OPEN',
+    openWallet: '打开',
+    retryBtn: '重试',
+    title: '链接钱包',
+    waitingWallet: '链接浏览器插件中...',
+    WalletConnect: {
+      tips: '是否打开 WalletConnect 模式?',
+      title: 'string',
+      WalletConnectModal: {
+        copy: 'string',
+        qrCode: 'string',
+        title: 'string',
+      },
+    },
+  },
+  name: 'RainbowKit Demo',
+};
+
+const LoginModal = () => {
+  return <></>;
+};
 const DisclaimerDemo: DisclaimerComponent = ({ Link, Text }) => {
   return (
     <Text>
@@ -194,7 +204,7 @@ function RainbowKitApp({
   const [selectedRadiusScale, setRadiusScale] = useState<RadiusScale>('large');
   const [selectedOverlayBlur, setOverlayBlur] = useState<OverlayBlur>('none');
   const [authEnabled, setAuthEnabled] = useState(pageProps.session !== null);
-  const [showRecentTransactions, setShowRecentTransactions] = useState(true);
+  const [showRecentTransactions, setShowRecentTransactions] = useState(false);
   const [coolModeEnabled, setCoolModeEnabled] = useState(false);
   const [modalSize, setModalSize] = useState<ModalSize>('wide');
   const [showDisclaimer, setShowDisclaimer] = useState(false);
@@ -239,6 +249,8 @@ function RainbowKitApp({
         chains={chains}
         coolMode={coolModeEnabled}
         initialChain={selectedInitialChainId}
+        loginInfo={loginInfo}
+        loginModal={<LoginModal />}
         modalSize={modalSize}
         showRecentTransactions={showRecentTransactions}
         theme={currentTheme({

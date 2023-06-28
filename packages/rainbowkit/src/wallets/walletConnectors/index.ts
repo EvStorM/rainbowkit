@@ -1,4 +1,6 @@
 import { argentWallet } from './argentWallet/argentWallet';
+import { binanceWallet } from './binanceWallet/binanceWallet';
+import { bitKeepWallet } from './bitKeepWallet/bitKeepWallet';
 import { bitskiWallet } from './bitskiWallet/bitskiWallet';
 import { braveWallet } from './braveWallet/braveWallet';
 import { coinbaseWallet } from './coinbaseWallet/coinbaseWallet';
@@ -15,7 +17,10 @@ import { rabbyWallet } from './rabbyWallet/rabbyWallet';
 import { rainbowWallet } from './rainbowWallet/rainbowWallet';
 import { safeWallet } from './safeWallet/safeWallet';
 import { tahoWallet } from './tahoWallet/tahoWallet';
+import { tokenPocketWallet } from './tokenPocketWallet/tokenPocketWallet';
 import { trustWallet } from './trustWallet/trustWallet';
+import { unipassWallet } from './unipassWallet/unipassWallet';
+import { uniswapWallet } from './uniswapWallet/uniswapWallet';
 import { walletConnectWallet } from './walletConnectWallet/walletConnectWallet';
 import { xdefiWallet } from './xdefiWallet/xdefiWallet';
 import { zerionWallet } from './zerionWallet/zerionWallet';
@@ -42,4 +47,9 @@ export {
   walletConnectWallet,
   xdefiWallet,
   zerionWallet,
+  bitKeepWallet,
+  binanceWallet,
+  unipassWallet,
+  tokenPocketWallet,
+  uniswapWallet,
 };
