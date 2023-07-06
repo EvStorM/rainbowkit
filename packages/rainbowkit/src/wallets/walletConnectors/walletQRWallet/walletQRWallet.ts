@@ -11,22 +11,22 @@ import type {
 export interface WalletConnectWalletLegacyOptions {
   projectId?: string;
   chains: Chain[];
-  version: '1';
-  options?: WalletConnectLegacyConnectorOptions;
+  walletConnectVersion: '1';
+  walletConnectOptions?: WalletConnectLegacyConnectorOptions;
 }
 
 export interface WalletConnectWalletOptions {
   projectId: string;
   chains: Chain[];
-  version?: '2';
-  options?: WalletConnectConnectorOptions;
+  walletConnectVersion?: '2';
+  walletConnectOptions?: WalletConnectConnectorOptions;
 }
 
 export const walletQRWallet = ({
   chains,
-  options,
   projectId,
-  version = '2',
+  walletConnectOptions,
+  walletConnectVersion = '1',
 }: WalletConnectWalletLegacyOptions | WalletConnectWalletOptions): Wallet => ({
   id: 'walletConnectQR',
   name: 'walletConnectQR',
@@ -34,15 +34,16 @@ export const walletQRWallet = ({
   iconBackground: '#3b99fc',
   createConnector: () => {
     const connector = getWalletConnectConnector({
-      version: '2',
+      version: walletConnectVersion,
       chains,
       projectId,
       options: {
         showQrModal: false,
-        ...options,
+        ...walletConnectOptions,
       },
     });
-    const getUri = async () => getWalletConnectUri(connector, version);
+    const getUri = async () =>
+      getWalletConnectUri(connector, walletConnectVersion);
     return {
       connector,
       ...{

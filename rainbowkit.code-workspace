@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "rainbowkit",
+			"path": "."
+		},
+		{
+			"name": "rainbowkit",
+			"path": "packages/rainbowkit"
+		},
+		{
+			"name": "example",
+			"path": "packages/example"
+		}
+	],
+	"settings": {}
+}

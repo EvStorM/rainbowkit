@@ -21,6 +21,12 @@ export type loginInfoType = {
     closeBtn?: string;
     retryBtn?: string;
     errorWallet?: string;
+    mobile?: {
+      qrtips: string;
+      title: string;
+      walletConnect: string;
+      recent: string;
+    };
     WalletConnect?: {
       title?: string;
       tips?: string;
@@ -49,5 +55,9 @@ export const AppContext = createContext<{
   disclaimer?: DisclaimerComponent;
   loginInfo?: loginInfoType;
   mobileQRCode?: boolean;
+  onLoading?: () => void;
+  onSuccess?: () => void;
+  onNotInstalled?: () => void;
+  onError?: (error: any) => void;
   mobileQRCodeIcon?: string | (() => Promise<string>);
 }>(defaultAppInfo);

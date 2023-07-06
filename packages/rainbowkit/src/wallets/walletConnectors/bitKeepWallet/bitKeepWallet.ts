@@ -4,13 +4,25 @@ import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainCon
 import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
 import { isAndroid } from '../../../utils/isMobile';
 import { Wallet } from '../../Wallet';
-import { getWalletConnectConnector } from '../../getWalletConnectConnector';
+import {
+  getWalletConnectConnector,
+  WalletConnectConnectorOptions,
+  WalletConnectLegacyConnectorOptions,
+} from '../../getWalletConnectConnector';
 export interface bitKeepWalletOptions {
   chains: Chain[];
   projectId: string;
   shimDisconnect?: boolean;
+  walletConnectVersion?: '2' | '1';
+  walletConnectOptions?: WalletConnectConnectorOptions;
 }
-
+export interface bitKeepWalletLegacyOptions {
+  chains: Chain[];
+  projectId: string;
+  shimDisconnect?: boolean;
+  walletConnectVersion: '1';
+  walletConnectOptions?: WalletConnectLegacyConnectorOptions;
+}
 declare global {
   interface Window {
     bitkeep: any;
@@ -86,7 +98,9 @@ export const bitKeepWallet = ({
   chains,
   projectId,
   shimDisconnect,
-}: bitKeepWalletOptions): Wallet => {
+  walletConnectOptions,
+  walletConnectVersion = '2',
+}: bitKeepWalletOptions | bitKeepWalletLegacyOptions): Wallet => {
   const isBitKeepInjected =
     typeof window !== 'undefined' &&
     typeof window.bitkeep !== 'undefined' &&
@@ -96,14 +110,19 @@ export const bitKeepWallet = ({
   return {
     createConnector: () => {
       const connector = shouldUseWalletConnect
-        ? getWalletConnectConnector({ chains, projectId })
+        ? getWalletConnectConnector({
+            chains,
+            options: walletConnectOptions,
+            projectId,
+            version: walletConnectVersion,
+          })
         : new BitkeepConnector({
             chains,
             options: { shimDisconnect },
           });
 
       const getUri = async () => {
-        const uri = await getWalletConnectUri(connector, '2');
+        const uri = await getWalletConnectUri(connector, walletConnectVersion);
         const linkUrl = `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
         // const linkUrl = `https://bkcode.vip?value=${encodeURIComponent(uri)}`;
         return isAndroid() ? linkUrl : linkUrl;
@@ -180,6 +199,6 @@ export const bitKeepWallet = ({
     iconUrl: async () => (await import('./bitKeepWallet.svg')).default,
     id: 'bitKeep',
     installed: !shouldUseWalletConnect ? isBitKeepInjected : undefined,
-    name: 'bitKeep',
+    name: 'BitKeep',
   };
 };

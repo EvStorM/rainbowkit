@@ -16,7 +16,6 @@ import {
   okxWallet,
   tokenPocketWallet,
   trustWallet,
-  walletConnectWallet,
   walletQRWallet,
   zerionWallet,
 } from 'deme-login/wallets';
@@ -49,6 +48,7 @@ import {
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { AppContextProps } from '../lib/AppContextProps';
+import toast from '../lib/Toast/src';
 
 const RAINBOW_TERMS = 'https://rainbow.me/terms-of-use';
 
@@ -71,25 +71,34 @@ const { chains, publicClient, webSocketPublicClient } = configureChains(
 );
 
 const projectId = '70b8e2cc9a86d6c62c209bf08df51431';
+const ops: any = {
+  chains,
+  projectId,
+  walletConnectOptions: {
+    bridge: 'wss://wc.popp.club',
+    // bridge: 'http://demetest.evils.cc',
+  },
+  walletConnectVersion: '2',
+};
 const connectors = connectorsForWallets([
   {
     groupName: '推荐',
     wallets: [
-      metaMaskWallet({ chains, projectId }),
-      bitKeepWallet({ chains, projectId }),
-      okxWallet({ chains, projectId }),
-      walletConnectWallet({ chains, projectId }),
-      imTokenWallet({ chains, projectId }),
-      trustWallet({ chains, projectId }),
-      tokenPocketWallet({ chains, projectId }),
-      zerionWallet({ chains, projectId }),
-      walletQRWallet({ chains, projectId }),
+      metaMaskWallet({ ...ops }),
+      bitKeepWallet({ ...ops }),
+      okxWallet({ ...ops }),
+      // walletConnectWallet({ ...ops }),
+      imTokenWallet({ ...ops }),
+      trustWallet({ ...ops }),
+      tokenPocketWallet({ ...ops }),
+      zerionWallet({ ...ops }),
+      walletQRWallet({ ...ops }),
     ],
   },
 ]);
 
 const wagmiConfig = createConfig({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   publicClient,
   webSocketPublicClient,
@@ -109,6 +118,12 @@ const loginInfo = {
     errorWallet: 'string',
     getBtn: '获取',
     haveTips: 'string',
+    mobile: {
+      qrtips: '扫描操作时,请勿退出弹窗',
+      recent: '最近使用',
+      title: 'Connect a Wallet',
+      walletConnect: 'WalletConnet 登录',
+    },
     nohaveTips: '没有',
     openBtn: 'OPEN',
     openWallet: '打开',
@@ -121,6 +136,7 @@ const loginInfo = {
       WalletConnectModal: {
         copy: 'string',
         qrCode: 'string',
+        tips: '',
         title: 'string',
       },
     },
@@ -256,6 +272,21 @@ function RainbowKitApp({
         loginModal={<LoginModal />}
         mobileQRCode
         modalSize={modalSize}
+        onError={error => {
+          // window.alert(error.message);
+        }}
+        onLoading={() => {
+          toast.loading('Loading...', {
+            duration: 0,
+            position: 'bottom-center',
+          });
+        }}
+        onNotInstalled={() => {
+          window.alert('error.message');
+        }}
+        onSuccess={() => {
+          window.alert('onSuccess');
+        }}
         showRecentTransactions={showRecentTransactions}
         theme={currentTheme({
           ...accentColor,
@@ -299,7 +330,6 @@ function RainbowKitApp({
                           name="authEnabled"
                           onChange={e => {
                             setAuthEnabled(e.target.checked);
-
                             // Reset connection and auth state when
                             // toggling the authentication mode.
                             // This better simulates the real dev experience

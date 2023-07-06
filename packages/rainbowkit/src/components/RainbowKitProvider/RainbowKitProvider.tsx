@@ -56,6 +56,10 @@ export type Theme =
 export interface RainbowKitProviderProps {
   loginModal: ReactNode;
   loginInfo: loginInfoType;
+  onLoading?: () => void;
+  onSuccess?: () => void;
+  onNotInstalled?: () => void;
+  onError?: (error: Error) => void;
   chains: RainbowKitChain[];
   initialChain?: RainbowKitChain | number;
   id?: string;
@@ -89,6 +93,10 @@ export function RainbowKitProvider({
   mobileQRCode = false,
   mobileQRCodeIcon,
   modalSize = ModalSizeOptions.WIDE,
+  onError,
+  onLoading,
+  onNotInstalled,
+  onSuccess,
   showRecentTransactions = false,
   theme = defaultTheme,
 }: RainbowKitProviderProps) {
@@ -111,6 +119,10 @@ export function RainbowKitProvider({
     loginModal,
     mobileQRCode,
     mobileQRCodeIcon,
+    onError,
+    onLoading,
+    onNotInstalled,
+    onSuccess,
   };
 
   const avatarContext = avatar ?? defaultAvatar;

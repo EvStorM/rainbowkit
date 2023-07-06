@@ -32,9 +32,11 @@ type Props = {
   size?: number;
   uri?: string;
   padding?: BoxProps['padding'];
+  borderWidth?: '0' | '1' | '2' | '4' | undefined;
 };
 
 export function QRCode({
+  borderWidth = '0',
   ecl = 'Q',
   logoBackground,
   logoMargin = 10,
@@ -121,10 +123,10 @@ export function QRCode({
 
   return (
     <Box
-      // borderColor="generalBorder"
+      borderColor="generalBorder"
       borderRadius="10"
-      // borderStyle="solid"
-      // borderWidth="1"
+      borderStyle="solid"
+      borderWidth={borderWidth}
       className={QRCodeBackgroundClassName}
       width="max"
     >

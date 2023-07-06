@@ -62,7 +62,7 @@ export function getWalletConnectConnector({
   chains,
   options = {},
   projectId,
-  version = '2',
+  version = '1',
 }: {
   chains: Chain[];
   projectId?: string;

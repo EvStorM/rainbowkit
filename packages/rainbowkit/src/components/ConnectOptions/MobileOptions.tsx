@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { touchableStyles } from '../../css/touchableStyles';
-import { getWalletConnectConnector } from '../../wallets/getWalletConnectConnector';
+import openApp from '../../utils/openApp';
 import {
   useWalletConnectors,
   WalletConnector,
@@ -19,10 +19,12 @@ import * as styles from './MobileOptions.css';
 
 function WalletButton({
   onClose,
+  recentstr,
   wallet,
 }: {
   wallet: WalletConnector;
   onClose: () => void;
+  recentstr?: string;
 }) {
   const {
     connect,
@@ -39,7 +41,8 @@ function WalletButton({
 
   const getMobileUri = mobile?.getUri;
   const coolModeRef = useCoolMode(iconUrl);
-
+  const { onError, onLoading, onNotInstalled, onSuccess } =
+    useContext(AppContext);
   return (
     <Box
       as="button"
@@ -48,8 +51,20 @@ function WalletButton({
       fontFamily="body"
       key={id}
       onClick={useCallback(async () => {
+        if (wallet.id !== 'walletConnectQR') {
+          onLoading?.();
+        }
         if (id === 'walletConnect') onClose?.();
-        connect?.();
+        connect?.()
+          ?.catch(error => {
+            onError?.(error);
+            // setConnectionError(true);
+          })
+          .then(res => {
+            if (res) {
+              onSuccess?.();
+            }
+          });
         // We need to guard against "onConnecting" callbacks being fired
         // multiple times since connector instances can be shared between
         // wallets. Ideally wagmi would let us scope the callback to the
@@ -74,7 +89,23 @@ function WalletButton({
               // https://github.com/WalletConnect/web3modal/blob/27f2b1fa2509130c5548061816c42d4596156e81/packages/core/src/utils/CoreUtil.ts#L72
               setWalletConnectDeepLink({ mobileUri, name });
             }
-
+            // If the WalletConnect request is rejected, restart the wallet
+            // selection flow to create a new connection with a new QR code
+            const provider = await wallet?.connector.getProvider();
+            const connection = provider?.signer?.connection;
+            if (connection?.on && connection?.off) {
+              const handleConnectionClose = () => {
+                removeHandlers();
+              };
+              const removeHandlers = () => {
+                connection.off('close', handleConnectionClose);
+                connection.off('open', removeHandlers);
+                // connection.off('error', handleConnectionError);
+              };
+              connection.on('close', handleConnectionClose);
+              connection.on('open', removeHandlers);
+              // connection.on('error', handleConnectionError);
+            }
             if (mobileUri.startsWith('http')) {
               // Workaround for https://github.com/rainbow-me/rainbowkit/issues/524.
               // Using 'window.open' causes issues on iOS in non-Safari browsers and
@@ -91,7 +122,10 @@ function WalletButton({
               link.rel = 'noreferrer noopener';
               link.click();
             } else {
-              window.location.href = mobileUri;
+              openApp(mobileUri, function () {
+                onNotInstalled?.();
+              });
+              // window.location.href = mobileUri;
             }
           }
         });
@@ -131,10 +165,9 @@ function WalletButton({
               {!wallet.ready && ' (unsupported)'}
             </Box>
           </Text>
-
           {wallet.recent && (
             <Text color="accentColor" size="12" weight="medium">
-              Recent
+              {recentstr ? recentstr : 'Recent'}
             </Text>
           )}
         </Box>
@@ -202,9 +235,11 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
           const removeHandlers = () => {
             connection.off('close', handleConnectionClose);
             connection.off('open', removeHandlers);
+            // connection.off('error', handleConnectionError);
           };
           connection.on('close', handleConnectionClose);
           connection.on('open', removeHandlers);
+          // connection.on('error', handleConnectionError);
         }
       });
     } else {
@@ -213,6 +248,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   };
   const getWCUrl = async () => {
     const sWallet = wallets.find(w => 'walletConnectQR' === w.id);
+
     if (sWallet) {
       selectWallet(sWallet);
     }
@@ -225,7 +261,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
 
   switch (walletStep) {
     case MobileWalletStep.Connect: {
-      headerLabel = 'Connect a Wallet';
+      headerLabel = loginInfo?.intl?.mobile?.title || 'Connect a Wallet';
       headerBackgroundContrast = selectedWallet ? true : true;
       walletContent = (
         <Box>
@@ -241,9 +277,17 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
               .filter(wallet => wallet.id !== 'walletConnectQR')
               .map(wallet => {
                 return (
-                  <Box key={wallet.id} paddingX="20">
-                    <Box width="60">
-                      <WalletButton onClose={onClose} wallet={wallet} />
+                  <Box key={wallet.id} paddingX="12">
+                    <Box
+                      style={{
+                        width: '72px',
+                      }}
+                    >
+                      <WalletButton
+                        onClose={onClose}
+                        recentstr={loginInfo?.intl?.mobile?.recent}
+                        wallet={wallet}
+                      />
                     </Box>
                   </Box>
                 );
@@ -251,21 +295,45 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
           </Box>
           {mobileQRCode && (
             <Box
-              background="profileForeground"
+              alignItems="center"
+              background="modalBackground"
               display="flex"
+              flexDirection="column"
               justifyContent="center"
               padding="10"
               paddingBottom="36"
               paddingTop="6"
             >
+              <Box
+                fontFamily="body"
+                fontSize="16"
+                fontWeight="medium"
+                marginBottom="12"
+                marginTop="12"
+              >
+                {loginInfo?.intl?.mobile?.walletConnect}
+              </Box>
+
               <QRCode
+                borderWidth="1"
                 logoBackground="profileForeground"
                 logoSize={72}
                 logoUrl={mobileQRCodeIcon ?? loginInfo?.iconUrl}
                 padding="16"
-                size={260}
+                size={240}
                 uri={qrCodeUri}
               />
+              <Box
+                fontSize="12"
+                marginBottom="16"
+                marginTop="12"
+                style={{
+                  color: '#888888',
+                  fontWeight: '300',
+                }}
+              >
+                {loginInfo?.intl?.mobile?.qrtips}
+              </Box>
             </Box>
           )}
         </Box>
