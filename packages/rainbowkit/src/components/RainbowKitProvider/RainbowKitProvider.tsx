@@ -59,6 +59,7 @@ export interface RainbowKitProviderProps {
   onLoading?: () => void;
   onSuccess?: () => void;
   onNotInstalled?: () => void;
+  onCallSuccess?: () => void;
   onError?: (error: Error) => void;
   chains: RainbowKitChain[];
   initialChain?: RainbowKitChain | number;
@@ -93,6 +94,7 @@ export function RainbowKitProvider({
   mobileQRCode = false,
   mobileQRCodeIcon,
   modalSize = ModalSizeOptions.WIDE,
+  onCallSuccess,
   onError,
   onLoading,
   onNotInstalled,
@@ -119,6 +121,7 @@ export function RainbowKitProvider({
     loginModal,
     mobileQRCode,
     mobileQRCodeIcon,
+    onCallSuccess,
     onError,
     onLoading,
     onNotInstalled,

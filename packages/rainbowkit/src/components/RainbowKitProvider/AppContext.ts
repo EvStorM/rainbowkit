@@ -58,6 +58,7 @@ export const AppContext = createContext<{
   onLoading?: () => void;
   onSuccess?: () => void;
   onNotInstalled?: () => void;
+  onCallSuccess?: () => void;
   onError?: (error: any) => void;
   mobileQRCodeIcon?: string | (() => Promise<string>);
 }>(defaultAppInfo);

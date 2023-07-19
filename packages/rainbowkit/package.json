@@ -1,6 +1,6 @@
 {
   "name": "deme-login",
-  "version": "2.2.6",
+  "version": "2.2.7",
   "description": "The best way to connect a wallet",
   "files": [
     "dist",
@@ -54,9 +54,11 @@
     "nock": "^13.2.4",
     "postcss": "^8.4.4",
     "react": "^18.2.0",
-    "viem": "~1.2.1",
+    "viem": "~1.3.0",
+    "wagmi": "~1.3.9",
     "vitest": "^0.30.0",
-    "wagmi": "~1.3.2"
+    "callapp-lib": "3.5.3"
+
   },
   "dependencies": {
     "@vanilla-extract/css": "1.9.1",

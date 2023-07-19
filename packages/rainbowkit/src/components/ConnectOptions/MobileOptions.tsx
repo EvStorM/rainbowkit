@@ -41,7 +41,7 @@ function WalletButton({
 
   const getMobileUri = mobile?.getUri;
   const coolModeRef = useCoolMode(iconUrl);
-  const { onError, onLoading, onNotInstalled, onSuccess } =
+  const { onCallSuccess, onError, onLoading, onNotInstalled, onSuccess } =
     useContext(AppContext);
   return (
     <Box
@@ -122,10 +122,11 @@ function WalletButton({
               link.rel = 'noreferrer noopener';
               link.click();
             } else {
-              openApp(mobileUri, function () {
-                onNotInstalled?.();
+              openApp(mobileUri, {
+                callFailed: onNotInstalled,
+                callSuccess: onCallSuccess,
+                // landingPage: wallet?.mobileDownloadUrl,
               });
-              // window.location.href = mobileUri;
             }
           }
         });

@@ -1,38 +1,34 @@
-import { isMobile, isSmallIOS } from './isMobile';
+import CallApp from './callApp/index';
 
-const openApp = (url: string, callback: Function) => {
-  if (isMobile()) {
-    let hasApp = true,
-      t = 2000,
-      t1 = Date.now(),
-      ifr = document.createElement('iframe');
-    setTimeout(function () {
-      if (!hasApp) {
-        callback?.();
-      }
-      document.body.removeChild(ifr);
-    }, 2000);
+interface IOpenApp {
+  callFailed?: () => void;
+  callStart?: () => void;
+  callSuccess?: () => void;
+  landingPage?: string;
+}
 
-    ifr.setAttribute('src', url);
-    ifr.setAttribute('style', 'display:none');
-    document.body.appendChild(ifr);
-    setTimeout(function () {
-      //启动app时间较长处理
-      let t2 = Date.now();
-      if (t2 - t1 < t + 100) {
-        hasApp = false;
-      }
-    }, t);
-  }
-  if (isSmallIOS()) {
-    location.href = url;
-    setTimeout(function () {
-      callback?.();
-    }, 250);
-    setTimeout(function () {
-      // location.reload();
-    }, 1000);
-  }
+const openApp = (
+  url: string,
+  { callFailed, callStart, callSuccess, landingPage }: IOpenApp
+) => {
+  const callApp = new CallApp({
+    callFailed: () => {
+      callFailed?.();
+    },
+    callStart: () => {
+      callStart?.();
+    },
+    callSuccess: () => {
+      callSuccess?.();
+    },
+    customConfig: {
+      landingPage: landingPage,
+      schemeUrl: url,
+    },
+    // 后台配置项
+  });
+  // 执行 唤起方法
+  callApp.start();
 };
 
 export default openApp;
