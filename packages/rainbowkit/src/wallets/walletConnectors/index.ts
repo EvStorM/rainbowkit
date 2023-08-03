@@ -9,7 +9,7 @@ import { frontierWallet } from './frontierWallet/frontierWallet';
 import { imTokenWallet } from './imTokenWallet/imTokenWallet';
 import { injectedWallet } from './injectedWallet/injectedWallet';
 import { ledgerWallet } from './ledgerWallet/ledgerWallet';
-import { mMaskWallet } from './metaMaskWallet/MMaskWallet';
+// import { mMaskWallet } from './metaMaskWallet/MMaskWallet';
 import { metaMaskWallet } from './metaMaskWallet/metaMaskWallet';
 import { mewWallet } from './mewWallet/mewWallet';
 import { okxWallet } from './okxWallet/okxWallet';
@@ -32,7 +32,6 @@ import { zerionWallet } from './zerionWallet/zerionWallet';
 
 export {
   argentWallet,
-  bitKeepWallet,
   bitskiWallet,
   braveWallet,
   coinbaseWallet,
@@ -43,7 +42,7 @@ export {
   injectedWallet,
   ledgerWallet,
   metaMaskWallet,
-  mMaskWallet,
+  // mMaskWallet,
   mewWallet,
   omniWallet,
   phantomWallet,
@@ -61,7 +60,6 @@ export {
   zerionWallet,
   bitKeepWallet,
   unipassWallet,
-  tokenPocketWallet,
   uniswapWallet,
   walletQRWallet,
 };

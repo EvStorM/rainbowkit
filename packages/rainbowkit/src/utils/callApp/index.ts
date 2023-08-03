@@ -36,20 +36,20 @@ const version = '1.0.1';
 
 const defaultOptions: CallAppOptions = {
   // 开始唤起 hook
-  callDownload: () => {},
+  callDownload: () => { },
 
   // 触发下载 hook
-  callError: () => {},
+  callError: () => { },
 
   // 下载中间页 url
   // urlSearch: undefined,
-  callFailed: () => {},
+  callFailed: () => { },
 
   // 成功 hook
-  callStart: () => {},
+  callStart: () => { },
 
   // 失败 hook
-  callSuccess: () => {},
+  callSuccess: () => { },
 
   // 触发下载 延迟检测时间
   channelId: '923',
@@ -70,7 +70,7 @@ const defaultOptions: CallAppOptions = {
   middleWareUrl: '',
 
   // 下载渠道 id
-  onWechatReady: () => {},
+  onWechatReady: () => { },
 
   path: '',
 
@@ -267,6 +267,7 @@ export interface CallAppOptions {
   intent?: boolean;
   // 是否支持下载, 默认 true
   download?: boolean;
+  urlSearch?: any;
   // 触发下载 延迟检测时间, 默认 2500
   delay?: number;
   // 下载渠道 id

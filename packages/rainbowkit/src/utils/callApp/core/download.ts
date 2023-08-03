@@ -140,5 +140,5 @@ export const generateDownloadUrl = (instance: CallAppInstance): string => {
 // 根据目标app 获取下载链接 配置
 export const getDownloadConfig = (name: AppFlags): DownloadConfig => {
   // 根据需要唤起的 目标 app ，获取 downloadUrl
-  return allDownloadUrls[name];
+  return allDownloadUrls[AppFlags.ZZ];
 };

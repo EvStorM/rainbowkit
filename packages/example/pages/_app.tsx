@@ -70,17 +70,13 @@ const projectId = '70b8e2cc9a86d6c62c209bf08df51431';
 const ops: any = {
   chains,
   projectId,
-  walletConnectOptions: {
-    bridge: 'wss://wc.popp.club',
-    // bridge: 'http://demetest.evils.cc',
-  },
   walletConnectVersion: '2',
 };
 const connectors = connectorsForWallets([
   {
     groupName: '推荐',
     wallets: [
-      mMaskWallet({ ...ops }),
+      // mMaskWallet({ ...ops }),
       metaMaskWallet({ ...ops }),
       bitKeepWallet({ ...ops }),
       okxWallet({ ...ops }),

@@ -15,7 +15,7 @@ export type App5 = {
 
 export const load5SDK = (): Promise<any> =>
   new Promise(resolve => {
-    loadJSArr([dependencies.WB_SDK.link], () => {
+    loadJSArr([dependencies?.W_SDK.link], () => {
       resolve((window as any).WBAPP);
     });
   });

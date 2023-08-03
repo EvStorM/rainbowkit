@@ -55,66 +55,66 @@ export const unipassWallet = ({
     createConnector: () => {
       const connector = shouldUseWalletConnect
         ? getWalletConnectConnector({
-            projectId,
-            chains,
-            version: walletConnectVersion,
-            options: walletConnectOptions,
-          })
+          projectId,
+          chains,
+          version: walletConnectVersion,
+          options: walletConnectOptions,
+        })
         : new InjectedConnector({
-            chains,
-            options: {
-              getProvider: () => window.bitkeep,
-              ...options,
-            },
-          });
+          chains,
+          options: {
+            getProvider: () => (window as any).bitkeep,
+            ...options,
+          },
+        });
 
       return {
         connector,
         mobile: {
           getUri: shouldUseWalletConnect
             ? async () => {
-                const uri = await getWalletConnectUri(
-                  connector,
-                  walletConnectVersion
-                );
-                return isAndroid()
-                  ? `uniPass://?action=connect&connectType=wc&value=${encodeURIComponent(
-                      uri
-                    )}`
-                  : `https://wallet.unipass.id?value=${encodeURIComponent(
-                      uri
-                    )}`;
-              }
+              const uri = await getWalletConnectUri(
+                connector,
+                walletConnectVersion
+              );
+              return isAndroid()
+                ? `uniPass://?action=connect&connectType=wc&value=${encodeURIComponent(
+                  uri
+                )}`
+                : `https://wallet.unipass.id?value=${encodeURIComponent(
+                  uri
+                )}`;
+            }
             : undefined,
         },
         qrCode: shouldUseWalletConnect
           ? {
-              getUri: async () =>
-                getWalletConnectUri(connector, walletConnectVersion),
-              instructions: {
-                learnMoreUrl: 'https://www.unipass.id',
-                steps: [
-                  {
-                    description:
-                      'We recommend putting OKX Wallet on your home screen for quicker access.',
-                    step: 'install',
-                    title: 'Open the OKX Wallet app',
-                  },
-                  {
-                    description:
-                      'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
-                    step: 'create',
-                    title: 'Create or Import a Wallet',
-                  },
-                  {
-                    description:
-                      'After you scan, a connection prompt will appear for you to connect your wallet.',
-                    step: 'scan',
-                    title: 'Tap the scan button',
-                  },
-                ],
-              },
-            }
+            getUri: async () =>
+              getWalletConnectUri(connector, walletConnectVersion),
+            instructions: {
+              learnMoreUrl: 'https://www.unipass.id',
+              steps: [
+                {
+                  description:
+                    'We recommend putting OKX Wallet on your home screen for quicker access.',
+                  step: 'install',
+                  title: 'Open the OKX Wallet app',
+                },
+                {
+                  description:
+                    'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+                  step: 'create',
+                  title: 'Create or Import a Wallet',
+                },
+                {
+                  description:
+                    'After you scan, a connection prompt will appear for you to connect your wallet.',
+                  step: 'scan',
+                  title: 'Tap the scan button',
+                },
+              ],
+            },
+          }
           : undefined,
         extension: {
           instructions: {
