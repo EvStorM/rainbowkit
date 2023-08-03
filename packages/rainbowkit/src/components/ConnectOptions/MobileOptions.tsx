@@ -65,6 +65,11 @@ function WalletButton({
               onSuccess?.();
             }
           });
+        console.log(
+          '%c [ wallet ]-55-「MobileOptions.tsx」',
+          'font-size:13px; background:#FFE47F; color:#000000;',
+          wallet.connector
+        );
         // We need to guard against "onConnecting" callbacks being fired
         // multiple times since connector instances can be shared between
         // wallets. Ideally wagmi would let us scope the callback to the

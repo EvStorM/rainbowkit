@@ -38,7 +38,6 @@ const Example = ({ authEnabled }: AppContextProps) => {
   const { openChainModal } = useChainModal();
   const { openConnectModal } = useConnectModal();
   const { address, isConnected: isWagmiConnected } = useAccount();
-  const { status } = useSession();
 
   const defaultProps = ConnectButton.__defaultProps;
 
@@ -78,7 +77,7 @@ const Example = ({ authEnabled }: AppContextProps) => {
     error: signingError,
     signMessage,
   } = useSignMessage({
-    message: 'wen token',
+    message: '1689752675547',
   });
 
   const {
