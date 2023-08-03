@@ -5,6 +5,7 @@ import { largeScreenMinWidth, ThemeVars } from '../../css/sprinkles.css';
 import { useWindowSize } from '../../hooks/useWindowSize';
 import { lightTheme } from '../../themes/lightTheme';
 import { TransactionStoreProvider } from '../../transactions/TransactionStoreContext';
+import { MetaMaskProvider } from '../Metamask/useMetaMask';
 import {
   AppContext,
   defaultAppInfo,
@@ -12,7 +13,6 @@ import {
   loginInfoType,
 } from './AppContext';
 import { AvatarComponent, AvatarContext, defaultAvatar } from './AvatarContext';
-import { CoolModeContext } from './CoolModeContext';
 import { ModalProvider } from './ModalContext';
 import {
   ModalSizeContext,
@@ -86,7 +86,6 @@ export function RainbowKitProvider({
   avatar,
   chains,
   children,
-  coolMode = false,
   id,
   initialChain,
   loginInfo,
@@ -135,7 +134,7 @@ export function RainbowKitProvider({
 
   return (
     <RainbowKitChainProvider chains={chains} initialChain={initialChain}>
-      <CoolModeContext.Provider value={coolMode}>
+      <MetaMaskProvider>
         <ModalSizeContext.Provider
           value={isSmallScreen ? ModalSizeOptions.COMPACT : modalSize}
         >
@@ -182,7 +181,7 @@ export function RainbowKitProvider({
             </TransactionStoreProvider>
           </ShowRecentTransactionsContext.Provider>
         </ModalSizeContext.Provider>
-      </CoolModeContext.Provider>
+      </MetaMaskProvider>
     </RainbowKitChainProvider>
   );
 }

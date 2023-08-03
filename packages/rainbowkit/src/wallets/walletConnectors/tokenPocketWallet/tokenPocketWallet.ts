@@ -1,14 +1,22 @@
 /* eslint-disable sort-keys-fix/sort-keys-fix */
+import type { InjectedConnectorOptions } from '@wagmi/core/connectors/injected';
 import { InjectedConnector } from 'wagmi/connectors/injected';
-import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
+import type { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
 import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
 import { isMobile } from '../../../utils/isMobile';
-import { Wallet } from '../../Wallet';
-import {
-  getWalletConnectConnector,
+import type { Wallet } from '../../Wallet';
+import type {
   WalletConnectConnectorOptions,
   WalletConnectLegacyConnectorOptions,
 } from '../../getWalletConnectConnector';
+import { getWalletConnectConnector } from '../../getWalletConnectConnector';
+
+export interface TokenPocketWalletLegacyOptions {
+  projectId?: string;
+  chains: Chain[];
+  walletConnectVersion: '1';
+  walletConnectOptions?: WalletConnectLegacyConnectorOptions;
+}
 
 export interface TokenPocketWalletOptions {
   projectId: string;
@@ -16,18 +24,14 @@ export interface TokenPocketWalletOptions {
   walletConnectVersion?: '2';
   walletConnectOptions?: WalletConnectConnectorOptions;
 }
-export interface TokenPocketWalletLegacyOptions {
-  projectId?: string;
-  chains: Chain[];
-  walletConnectVersion: '1';
-  walletConnectOptions?: WalletConnectLegacyConnectorOptions;
-}
+
 export const tokenPocketWallet = ({
   chains,
   projectId,
   walletConnectOptions,
   walletConnectVersion = '2',
-}: TokenPocketWalletOptions | TokenPocketWalletLegacyOptions): Wallet => {
+}: (TokenPocketWalletLegacyOptions | TokenPocketWalletOptions) &
+  InjectedConnectorOptions): Wallet => {
   const isTokenPocketInjected =
     typeof window !== 'undefined' && window.ethereum?.isTokenPocket === true;
 
@@ -52,10 +56,10 @@ export const tokenPocketWallet = ({
     createConnector: () => {
       const connector = shouldUseWalletConnect
         ? getWalletConnectConnector({
-            projectId,
             chains,
-            version: walletConnectVersion,
+            projectId,
             options: walletConnectOptions,
+            version: walletConnectVersion,
           })
         : new InjectedConnector({ chains });
 

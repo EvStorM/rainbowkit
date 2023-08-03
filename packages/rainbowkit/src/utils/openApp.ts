@@ -25,6 +25,8 @@ const openApp = (
       landingPage: landingPage,
       schemeUrl: url,
     },
+    delay: 6000,
+    download: false,
     // 后台配置项
   });
   // 执行 唤起方法

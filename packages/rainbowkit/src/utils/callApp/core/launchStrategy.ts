@@ -54,7 +54,7 @@ export const getDefaultIosPlatRegList = (ctx: CallAppInstance) => {
     checkOpen(
       () => {
         callFailed();
-        ctx.download();
+        // ctx.download();
       },
       callSuccess,
       callError,

@@ -185,8 +185,8 @@ export default class CallApp {
     //
     options && this.init(options);
 
-    const { callDownload, customConfig } = this.options;
-
+    const { callDownload, customConfig, download } = this.options;
+    if (!download) return;
     callDownload?.();
 
     logInfo('downloadLink', this.downloadLink);

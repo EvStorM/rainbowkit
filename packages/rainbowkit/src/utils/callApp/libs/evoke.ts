@@ -75,6 +75,7 @@ export function evokeByIFrame(uri: string) {
   if (!iframe) {
     iframe = document.createElement('iframe');
     iframe.style.cssText = 'display:none;border:0;width:0;height:0;';
+    iframe.style.display = 'none';
     document.body.append(iframe);
   }
 

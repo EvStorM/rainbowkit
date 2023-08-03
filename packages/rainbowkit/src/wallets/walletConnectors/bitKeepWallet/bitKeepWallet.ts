@@ -1,113 +1,66 @@
+/* eslint-disable sort-keys-fix/sort-keys-fix */
 import type { InjectedConnectorOptions } from '@wagmi/core/connectors/injected';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
 import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
 import { isAndroid } from '../../../utils/isMobile';
 import { Wallet } from '../../Wallet';
-import {
-  getWalletConnectConnector,
+import { getWalletConnectConnector } from '../../getWalletConnectConnector';
+import type {
   WalletConnectConnectorOptions,
   WalletConnectLegacyConnectorOptions,
 } from '../../getWalletConnectConnector';
-export interface bitKeepWalletOptions {
+
+export interface BitKeepWalletLegacyOptions {
+  projectId?: string;
   chains: Chain[];
-  projectId: string;
-  shimDisconnect?: boolean;
-  walletConnectVersion?: '2' | '1';
-  walletConnectOptions?: WalletConnectConnectorOptions;
-}
-export interface bitKeepWalletLegacyOptions {
-  chains: Chain[];
-  projectId: string;
-  shimDisconnect?: boolean;
   walletConnectVersion: '1';
   walletConnectOptions?: WalletConnectLegacyConnectorOptions;
 }
-declare global {
-  interface Window {
-    bitkeep: any;
-  }
-}
 
-class BitkeepConnector extends InjectedConnector {
-  id: string;
-  ready: boolean;
-  provider: NonNullable<typeof window['ethereum']> | undefined;
-  constructor({ chains = [], options_ = {} }: InjectedConnectorOptions) {
-    const options = {
-      name: 'BitKeep',
-      ...options_,
-    };
-    super({ chains, options });
-
-    this.id = 'Bitkeep';
-    this.ready =
-      typeof window != 'undefined' &&
-      !!this.findProvider(window?.bitkeep?.ethereum);
-  }
-  async getProvider() {
-    if (typeof window !== 'undefined') {
-      // TODO: Fallback to `ethereum#initialized` event for async injection
-      // https://github.com/BitKeep/detect-provider#synchronous-and-asynchronous-injection=
-      this.provider = window.bitkeep?.ethereum;
-    }
-    return this.provider;
-  }
-  getReady(ethereum: NonNullable<typeof window['ethereum']>) {
-    if (!ethereum.isBitKeep || !ethereum) return;
-    // Brave tries to make itself look like BitKeep
-    // Could also try RPC `web3_clientVersion` if following is unreliable
-    if (ethereum.isBraveWallet && !ethereum._events && !ethereum._state) return;
-    if (ethereum.isTokenPocket) return;
-    if (ethereum.isTokenary) return;
-    return ethereum;
-  }
-  findProvider(ethereum: NonNullable<typeof window['ethereum']>) {
-    if (ethereum?.providers) return ethereum.providers.find(this.getReady);
-    return this.getReady(ethereum);
-  }
-}
-
-function isBitKeep(ethereum: NonNullable<typeof window['ethereum']>) {
-  // Logic borrowed from wagmi's bitKeepConnector
-  // https://github.com/tmm/wagmi/blob/main/packages/core/src/connectors/bitKeep.ts
-  const isBitKeep = Boolean(ethereum.isBitKeep);
-
-  if (!isBitKeep) {
-    return false;
-  }
-
-  // Brave tries to make itself look like bitKeep
-  // Could also try RPC `web3_clientVersion` if following is unreliable
-  if (ethereum.isBraveWallet && !ethereum._events && !ethereum._state) {
-    return false;
-  }
-
-  if (ethereum.isTokenPocket) {
-    return false;
-  }
-
-  if (ethereum.isTokenary) {
-    return false;
-  }
-
-  return true;
+export interface BitKeepWalletOptions {
+  projectId: string;
+  chains: Chain[];
+  walletConnectVersion?: '2';
+  walletConnectOptions?: WalletConnectConnectorOptions;
 }
 
 export const bitKeepWallet = ({
   chains,
   projectId,
-  shimDisconnect,
   walletConnectOptions,
   walletConnectVersion = '2',
-}: bitKeepWalletOptions | bitKeepWalletLegacyOptions): Wallet => {
+  ...options
+}: (BitKeepWalletLegacyOptions | BitKeepWalletOptions) &
+  InjectedConnectorOptions): Wallet => {
   const isBitKeepInjected =
     typeof window !== 'undefined' &&
-    typeof window.bitkeep !== 'undefined' &&
-    typeof window.bitkeep.ethereum !== 'undefined' &&
-    isBitKeep(window.bitkeep.ethereum);
+    // @ts-expect-error
+    window.bitkeep !== undefined &&
+    // @ts-expect-error
+    window.bitkeep.ethereum !== undefined &&
+    // @ts-expect-error
+    window.bitkeep.ethereum.isBitKeep === true;
+
   const shouldUseWalletConnect = !isBitKeepInjected;
+
   return {
+    id: 'bitKeep',
+    name: 'BitKeep',
+    iconUrl: async () => (await import('./bitKeepWallet.svg')).default,
+    iconAccent: '#f6851a',
+    iconBackground: '#fff',
+    installed: !shouldUseWalletConnect ? isBitKeepInjected : undefined,
+    downloadUrls: {
+      android: 'https://bitkeep.com/en/download?type=2',
+      ios: 'https://apps.apple.com/app/bitkeep/id1395301115',
+      mobile: 'https://bitkeep.com/en/download?type=2',
+      qrCode: 'https://bitkeep.com/en/download',
+      chrome:
+        'https://chrome.google.com/webstore/detail/bitkeep-crypto-nft-wallet/jiidiaalihmmhddjgbnbgdfflelocpak',
+      browserExtension: 'https://bitkeep.com/en/download',
+    },
+
     createConnector: () => {
       const connector = shouldUseWalletConnect
         ? getWalletConnectConnector({
@@ -116,17 +69,23 @@ export const bitKeepWallet = ({
             projectId,
             version: walletConnectVersion,
           })
-        : new BitkeepConnector({
+        : new InjectedConnector({
             chains,
-            options: { shimDisconnect },
+            options: {
+              // @ts-expect-error
+              getProvider: () => window.bitkeep.ethereum,
+              ...options,
+            },
           });
 
       const getUri = async () => {
         const uri = await getWalletConnectUri(connector, walletConnectVersion);
-        const linkUrl = `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
-        // const linkUrl = `https://bkcode.vip?value=${encodeURIComponent(uri)}`;
-        return isAndroid() ? linkUrl : linkUrl;
+
+        return isAndroid()
+          ? uri
+          : `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
       };
+
       return {
         connector,
         extension: {
@@ -159,7 +118,8 @@ export const bitKeepWallet = ({
         },
         qrCode: shouldUseWalletConnect
           ? {
-              getUri,
+              getUri: async () =>
+                getWalletConnectUri(connector, walletConnectVersion),
               instructions: {
                 learnMoreUrl: 'https://study.bitkeep.com',
                 steps: [
@@ -187,18 +147,5 @@ export const bitKeepWallet = ({
           : undefined,
       };
     },
-    downloadUrls: {
-      android: 'https://bitkeep.com/en/download?type=2',
-      browserExtension:
-        'https://chrome.google.com/webstore/detail/bitkeep-crypto-nft-wallet/jiidiaalihmmhddjgbnbgdfflelocpak',
-      ios: 'https://apps.apple.com/app/bitkeep/id1395301115',
-      qrCode: 'https://bitkeep.com/en/download',
-    },
-    iconAccent: '#f6851a',
-    iconBackground: '#6C29F0',
-    iconUrl: async () => (await import('./bitKeepWallet.svg')).default,
-    id: 'bitKeep',
-    installed: !shouldUseWalletConnect ? isBitKeepInjected : undefined,
-    name: 'BitKeep',
   };
 };

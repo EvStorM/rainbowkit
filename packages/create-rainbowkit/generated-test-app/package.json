@@ -1,7 +1,7 @@
 {
   "name": "generated-test-app",
   "private": true,
-  "version": "0.1.57",
+  "version": "0.1.62",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@types/node": "^18.16.12",
-    "@types/react": "^18.2.6",
+    "@types/react": "^18.2.14",
     "eslint": "^8.15.0",
     "eslint-config-next": "^13.4.3",
     "typescript": "^5.0.4"
