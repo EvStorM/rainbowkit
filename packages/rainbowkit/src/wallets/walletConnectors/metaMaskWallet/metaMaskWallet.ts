@@ -113,66 +113,67 @@ export const metaMaskWallet = ({
     createConnector: () => {
       const connector = shouldUseWalletConnect
         ? getWalletConnectConnector({
-            projectId,
-            chains,
-            version: walletConnectVersion,
-            options: walletConnectOptions,
-          })
+          projectId,
+          chains,
+          version: walletConnectVersion,
+          options: walletConnectOptions,
+        })
         : new MetaMaskConnector({
-            chains,
-            options: {
-              getProvider: () =>
-                providers
-                  ? providers.find(isMetaMask)
-                  : typeof window !== 'undefined'
+          chains,
+          options: {
+            getProvider: () =>
+              providers
+                ? providers.find(isMetaMask)
+                : typeof window !== 'undefined'
                   ? window.ethereum
                   : undefined,
-              ...options,
-            },
-          });
+            ...options,
+          },
+        });
 
       const getUri = async () => {
         const uri = await getWalletConnectUri(connector, walletConnectVersion);
-        return isAndroid()
-          ? uri
-          : isIOS()
-          ? // currently broken in MetaMask v6.5.0 https://github.com/MetaMask/metamask-mobile/issues/6457
-            `metamask://wc?uri=${encodeURIComponent(uri)}`
-          : `https://metamask.app.link/wc?uri=${encodeURIComponent(uri)}`;
+        console.log('%c [ uri ]-136-「metaMaskWallet.ts」', 'font-size:13px; background:#FFE47F; color:#000000;', uri)
+        return `metamask://wc?uri=${encodeURIComponent(uri)}`
+        // return isAndroid()
+        //   ? `metamask:///wc${encodeURIComponent(uri)}`
+        //   : isIOS()
+        //     ? // currently broken in MetaMask v6.5.0 https://github.com/MetaMask/metamask-mobile/issues/6457
+        //     `metamask:///wc?uri=${encodeURIComponent(uri)}`
+        //     : `https://metamask.app.link/wc?uri=${encodeURIComponent(uri)}`;
       };
-
       return {
         connector,
         mobile: {
-          getUri: shouldUseWalletConnect ? getUri : undefined,
+          getUri: shouldUseWalletConnect ? getUri : getUri,
         },
         qrCode: shouldUseWalletConnect
           ? {
-              getUri,
-              instructions: {
-                learnMoreUrl: 'https://metamask.io/faqs/',
-                steps: [
-                  {
-                    description:
-                      'We recommend putting MetaMask on your home screen for quicker access.',
-                    step: 'install',
-                    title: 'Open the MetaMask app',
-                  },
-                  {
-                    description:
-                      'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
-                    step: 'create',
-                    title: 'Create or Import a Wallet',
-                  },
-                  {
-                    description:
-                      'After you scan, a connection prompt will appear for you to connect your wallet.',
-                    step: 'scan',
-                    title: 'Tap the scan button',
-                  },
-                ],
-              },
-            }
+            getUri,
+            instructions: {
+              learnMoreUrl: 'https://metamask.io/faqs/',
+              steps: [
+                {
+                  description:
+                    'We recommend putting MetaMask on your home screen for quicker access.',
+                  step: 'install',
+                  title: 'Open the MetaMask app',
+                },
+                {
+                  description:
+                    'Be sure to back up your wallet using a secure method. Never share your secret phrase with anyone.',
+                  step: 'create',
+                  title: 'Create or Import a Wallet',
+                },
+                {
+                  description:
+                    'After you scan, a connection prompt will appear for you to connect your wallet.',
+                  step: 'scan',
+                  title: 'Tap the scan button',
+                },
+              ],
+            },
+          }
           : undefined,
         extension: {
           instructions: {

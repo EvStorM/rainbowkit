@@ -82,6 +82,11 @@ function WalletButton({
 
           if (getMobileUri) {
             const mobileUri = await getMobileUri();
+            console.log(
+              '%c [ mobileUri ]-85-「MobileOptions.tsx」',
+              'font-size:13px; background:#FFE47F; color:#000000;',
+              mobileUri
+            );
 
             if (
               connector.id === 'walletConnect' ||
@@ -219,6 +224,11 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
         callbackFired = true;
         const uri = await wallet?.qrCode?.getUri();
         setQrCodeUri(uri ?? 'null');
+        console.log(
+          '%c [ uri ]-227-「MobileOptions.tsx」',
+          'font-size:13px; background:#FFE47F; color:#000000;',
+          uri
+        );
 
         // This timeout prevents the UI from flickering if connection is instant,
         // otherwise users will see a flash of the "connecting" state.

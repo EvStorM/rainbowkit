@@ -3,7 +3,6 @@ import type { InjectedConnectorOptions } from '@wagmi/core/connectors/injected';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
 import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
-import { isAndroid } from '../../../utils/isMobile';
 import { Wallet } from '../../Wallet';
 import { getWalletConnectConnector } from '../../getWalletConnectConnector';
 import type {
@@ -75,21 +74,17 @@ export const okxWallet = ({
               ...options,
             },
           });
-
+      const getUri = async () => {
+        const uri = await getWalletConnectUri(connector, walletConnectVersion);
+        // return isAndroid()
+        //   ? uri
+        //   : `okex://main/wc?uri=${encodeURIComponent(uri)}`;
+        return `okex://main/wc?uri=${encodeURIComponent(uri)}`;
+      };
       return {
         connector,
         mobile: {
-          getUri: shouldUseWalletConnect
-            ? async () => {
-                const uri = await getWalletConnectUri(
-                  connector,
-                  walletConnectVersion
-                );
-                return isAndroid()
-                  ? uri
-                  : `okex://main/wc?uri=${encodeURIComponent(uri)}`;
-              }
-            : undefined,
+          getUri: getUri,
         },
         qrCode: shouldUseWalletConnect
           ? {

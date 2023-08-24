@@ -28,7 +28,7 @@ const defaultProps = {
   accountStatus: 'full',
   chainStatus: { largeScreen: 'full', smallScreen: 'icon' },
   label: 'Connect Wallet',
-  showBalance: { largeScreen: true, smallScreen: false },
+  showBalance: { largeScreen: false, smallScreen: false },
 } as const;
 
 export function ConnectButton({

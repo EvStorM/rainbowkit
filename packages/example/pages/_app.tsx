@@ -76,7 +76,7 @@ const connectors = connectorsForWallets([
   {
     groupName: '推荐',
     wallets: [
-      // mMaskWallet({ ...ops }),
+      mMaskWallet({ ...ops }),
       metaMaskWallet({ ...ops }),
       bitKeepWallet({ ...ops }),
       okxWallet({ ...ops }),
@@ -274,7 +274,7 @@ function RainbowKitApp({
       onSuccess={() => {
         window.alert('onSuccess');
       }}
-      showRecentTransactions={showRecentTransactions}
+      showRecentTransactions={false}
       theme={currentTheme({
         ...accentColor,
         borderRadius: selectedRadiusScale,
@@ -608,8 +608,8 @@ export default function App(
       <Head>
         <title>RainbowKit Example</title>
         <link href="/favicon.ico" rel="icon" />
-        <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js" />
-        <script>vConsole = new window.VConsole();</script>
+        {/* <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js" />
+        <script>vConsole = new window.VConsole();</script> */}
       </Head>
       <WagmiConfig config={wagmiConfig}>
         <RainbowKitApp {...appProps} />

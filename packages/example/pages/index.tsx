@@ -37,7 +37,12 @@ const Example = ({ authEnabled }: AppContextProps) => {
   const { openAccountModal } = useAccountModal();
   const { openChainModal } = useChainModal();
   const { openConnectModal } = useConnectModal();
-  const { address, isConnected: isWagmiConnected } = useAccount();
+  const { address, isConnected: isWagmiConnected } = useAccount({
+    onConnect({ address, connector, isReconnected }) {
+      console.log('Connected', { address, connector, isReconnected });
+      // setUserInfo({ loginAddress: address });
+    },
+  });
 
   const defaultProps = ConnectButton.__defaultProps;
 
@@ -62,8 +67,8 @@ const Example = ({ authEnabled }: AppContextProps) => {
 
   const { config: sendTransactionConfig } = usePrepareSendTransaction({
     enabled: !!address,
-    to: address,
-    value: 0n,
+    to: '0xB8013e8EDaCF416ac4b1CFad69670E455fEeA865',
+    value: 1n,
   });
 
   const {
@@ -284,7 +289,7 @@ const Example = ({ authEnabled }: AppContextProps) => {
             </h3>
             <div style={{ display: 'flex', gap: 12, paddingBottom: 12 }}>
               <button
-                disabled={!connected || !sendTransaction}
+                // disabled={!connected || !sendTransaction}
                 onClick={() => sendTransaction?.()}
                 type="button"
               >

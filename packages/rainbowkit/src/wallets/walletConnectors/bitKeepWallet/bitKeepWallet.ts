@@ -3,7 +3,6 @@ import type { InjectedConnectorOptions } from '@wagmi/core/connectors/injected';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { Chain } from '../../../components/RainbowKitProvider/RainbowKitChainContext';
 import { getWalletConnectUri } from '../../../utils/getWalletConnectUri';
-import { isAndroid } from '../../../utils/isMobile';
 import { Wallet } from '../../Wallet';
 import { getWalletConnectConnector } from '../../getWalletConnectConnector';
 import type {
@@ -80,10 +79,10 @@ export const bitKeepWallet = ({
 
       const getUri = async () => {
         const uri = await getWalletConnectUri(connector, walletConnectVersion);
-
-        return isAndroid()
-          ? uri
-          : `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
+        // return isAndroid()
+        //   ? uri
+        //   : `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
+        return `bitkeep://wc?uri=${encodeURIComponent(uri)}`;
       };
 
       return {
@@ -114,7 +113,7 @@ export const bitKeepWallet = ({
           },
         },
         mobile: {
-          getUri: shouldUseWalletConnect ? getUri : undefined,
+          getUri: getUri,
         },
         qrCode: shouldUseWalletConnect
           ? {
