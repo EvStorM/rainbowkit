@@ -85,7 +85,6 @@ const connectors = connectorsForWallets([
       trustWallet({ ...ops }),
       tokenPocketWallet({ ...ops }),
       zerionWallet({ ...ops }),
-      walletQRWallet({ ...ops }),
     ],
   },
 ]);
@@ -134,7 +133,7 @@ const loginInfo = {
       },
     },
   },
-  name: 'RainbowKit Demo',
+  name: 'phome Demo',
 };
 
 const LoginModal = () => {
@@ -257,7 +256,6 @@ function RainbowKitApp({
       initialChain={selectedInitialChainId}
       loginInfo={loginInfo}
       loginModal={<LoginModal />}
-      mobileQRCode
       modalSize={modalSize}
       onError={error => {
         // window.alert(error.message);
@@ -274,6 +272,7 @@ function RainbowKitApp({
       onSuccess={() => {
         window.alert('onSuccess');
       }}
+      phoneLogin
       showRecentTransactions={false}
       theme={currentTheme({
         ...accentColor,

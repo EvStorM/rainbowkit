@@ -55,6 +55,7 @@ export const AppContext = createContext<{
   disclaimer?: DisclaimerComponent;
   loginInfo?: loginInfoType;
   mobileQRCode?: boolean;
+  phoneLogin?: boolean;
   onLoading?: () => void;
   onSuccess?: () => void;
   onNotInstalled?: () => void;

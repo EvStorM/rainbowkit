@@ -65,11 +65,6 @@ function WalletButton({
               onSuccess?.();
             }
           });
-        console.log(
-          '%c [ wallet ]-55-「MobileOptions.tsx」',
-          'font-size:13px; background:#FFE47F; color:#000000;',
-          wallet.connector
-        );
         // We need to guard against "onConnecting" callbacks being fired
         // multiple times since connector instances can be shared between
         // wallets. Ideally wagmi would let us scope the callback to the
@@ -82,11 +77,6 @@ function WalletButton({
 
           if (getMobileUri) {
             const mobileUri = await getMobileUri();
-            console.log(
-              '%c [ mobileUri ]-85-「MobileOptions.tsx」',
-              'font-size:13px; background:#FFE47F; color:#000000;',
-              mobileUri
-            );
 
             if (
               connector.id === 'walletConnect' ||
@@ -197,7 +187,8 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
   const wallets = useWalletConnectors();
   let headerLabel = null;
   let walletContent = null;
-  const { loginInfo, mobileQRCode, mobileQRCodeIcon } = useContext(AppContext);
+  const { loginInfo, loginModal, mobileQRCode, mobileQRCodeIcon, phoneLogin } =
+    useContext(AppContext);
   let headerBackgroundContrast = false;
   let headerBackButtonLink: MobileWalletStep | null = null;
   let chains = useRainbowKitChains();
@@ -224,12 +215,6 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
         callbackFired = true;
         const uri = await wallet?.qrCode?.getUri();
         setQrCodeUri(uri ?? 'null');
-        console.log(
-          '%c [ uri ]-227-「MobileOptions.tsx」',
-          'font-size:13px; background:#FFE47F; color:#000000;',
-          uri
-        );
-
         // This timeout prevents the UI from flickering if connection is instant,
         // otherwise users will see a flash of the "connecting" state.
         setTimeout(
@@ -352,6 +337,7 @@ export function MobileOptions({ onClose }: { onClose: () => void }) {
               </Box>
             </Box>
           )}
+          {phoneLogin && loginModal}
         </Box>
       );
       break;

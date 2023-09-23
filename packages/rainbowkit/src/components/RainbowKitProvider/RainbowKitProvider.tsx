@@ -76,6 +76,7 @@ export interface RainbowKitProviderProps {
   avatar?: AvatarComponent;
   modalSize?: ModalSizes;
   mobileQRCode?: boolean;
+  phoneLogin?: boolean;
   mobileQRCodeIcon?: string | (() => Promise<string>);
 }
 
@@ -98,6 +99,7 @@ export function RainbowKitProvider({
   onLoading,
   onNotInstalled,
   onSuccess,
+  phoneLogin = false,
   showRecentTransactions = false,
   theme = defaultTheme,
 }: RainbowKitProviderProps) {
@@ -125,6 +127,7 @@ export function RainbowKitProvider({
     onLoading,
     onNotInstalled,
     onSuccess,
+    phoneLogin,
   };
 
   const avatarContext = avatar ?? defaultAvatar;

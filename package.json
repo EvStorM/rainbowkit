@@ -92,5 +92,8 @@
     "onlyBuiltDependencies": [
       "esbuild"
     ]
+  },
+  "dependencies": {
+    "goober": "^2.1.13"
   }
 }
