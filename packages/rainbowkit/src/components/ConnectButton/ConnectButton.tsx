@@ -258,7 +258,9 @@ export function ConnectButton({
                 fontWeight="bold"
                 height="40"
                 key="connect"
-                onClick={openConnectModal}
+                onClick={() => {
+                  openConnectModal();
+                }}
                 paddingX="14"
                 testId="connect-button"
                 transition="default"

@@ -48,7 +48,7 @@ export interface ConnectButtonRendererProps {
     authenticationStatus?: AuthenticationStatus;
     openAccountModal: () => void;
     openChainModal: () => void;
-    openConnectModal: () => void;
+    openConnectModal: (mask?: boolean) => void;
     accountModalOpen: boolean;
     chainModalOpen: boolean;
     connectModalOpen: boolean;

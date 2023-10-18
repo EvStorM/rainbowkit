@@ -7,15 +7,20 @@ import { SignIn } from '../SignIn/SignIn';
 export interface ConnectModalProps {
   open: boolean;
   onClose: () => void;
+  maskClose?: boolean;
 }
 
-export function ConnectModal({ onClose, open }: ConnectModalProps) {
+export function ConnectModal({ maskClose, onClose, open }: ConnectModalProps) {
   const titleId = 'rk_connect_title';
   const connectionStatus = useConnectionStatus();
-
   if (connectionStatus === 'disconnected') {
     return (
-      <Dialog onClose={onClose} open={open} titleId={titleId}>
+      <Dialog
+        maskClose={maskClose}
+        onClose={onClose}
+        open={open}
+        titleId={titleId}
+      >
         <DialogContent bottomSheetOnMobile padding="0" wide>
           <ConnectOptions onClose={onClose} />
         </DialogContent>
@@ -25,7 +30,12 @@ export function ConnectModal({ onClose, open }: ConnectModalProps) {
 
   if (connectionStatus === 'unauthenticated') {
     return (
-      <Dialog onClose={onClose} open={open} titleId={titleId}>
+      <Dialog
+        maskClose={maskClose}
+        onClose={onClose}
+        open={open}
+        titleId={titleId}
+      >
         <DialogContent bottomSheetOnMobile padding="0">
           <SignIn onClose={onClose} />
         </DialogContent>

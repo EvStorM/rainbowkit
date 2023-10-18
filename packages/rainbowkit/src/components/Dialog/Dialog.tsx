@@ -22,9 +22,16 @@ interface DialogProps {
   titleId: string;
   onMountAutoFocus?: (event: Event) => void;
   children: ReactNode;
+  maskClose?: boolean;
 }
 
-export function Dialog({ children, onClose, open, titleId }: DialogProps) {
+export function Dialog({
+  children,
+  maskClose,
+  onClose,
+  open,
+  titleId,
+}: DialogProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) =>
       open && event.key === 'Escape' && onClose();
@@ -40,11 +47,14 @@ export function Dialog({ children, onClose, open, titleId }: DialogProps) {
       getComputedStyle(window.document.body).overflow !== 'hidden'
     );
   }, []);
-
-  const handleBackdropClick = useCallback(() => onClose(), [onClose]);
-  const themeRootProps = useThemeRootProps();
   const mobile = isMobile();
 
+  const handleBackdropClick = useCallback(() => {
+    if (!maskClose || mobile) {
+      onClose();
+    }
+  }, [onClose, mobile]);
+  const themeRootProps = useThemeRootProps();
   return (
     <>
       {open

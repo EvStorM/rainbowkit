@@ -16,12 +16,21 @@ import { useAuthenticationStatus } from './AuthenticationContext';
 
 function useModalStateValue() {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [maskClose, setMaskClose] = useState(true);
   const [children, setChildren] = useState<ReactNode>(null);
   return {
     children,
-    closeModal: useCallback(() => setModalOpen(false), []),
+    closeModal: useCallback(() => {
+      setModalOpen(false);
+    }, []),
     isModalOpen,
-    openModal: useCallback(() => setModalOpen(true), []),
+    maskClose,
+    openModal: useCallback((mask?: boolean) => {
+      if (mask) {
+        setMaskClose(true);
+      }
+      setModalOpen(true);
+    }, []),
     setChildren,
   };
 }
@@ -33,7 +42,7 @@ interface ModalContextValue {
   connectModalOpen: boolean;
   openAccountModal?: () => void;
   openChainModal?: () => void;
-  openConnectModal?: () => void;
+  openConnectModal?: (mask?: boolean) => void;
   openBlockModal?: () => void;
   setChildren?: (children: ReactNode) => void;
   closeBlockModal?: () => void;
@@ -58,6 +67,7 @@ export function ModalProvider({ children }: ModalProviderProps) {
   const {
     closeModal: closeConnectModal,
     isModalOpen: connectModalOpen,
+    maskClose,
     openModal: openConnectModal,
   } = useModalStateValue();
 
@@ -154,7 +164,11 @@ export function ModalProvider({ children }: ModalProviderProps) {
       )}
     >
       {children}
-      <ConnectModal onClose={closeConnectModal} open={connectModalOpen} />
+      <ConnectModal
+        maskClose={maskClose}
+        onClose={closeConnectModal}
+        open={connectModalOpen}
+      />
       <BlockModal
         children={blockModalChildren}
         onClose={closeBlockModal}

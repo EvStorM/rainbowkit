@@ -195,7 +195,12 @@ const Example = ({ authEnabled }: AppContextProps) => {
                 {(() => {
                   if (!connected) {
                     return (
-                      <button onClick={openConnectModal} type="button">
+                      <button
+                        onClick={() => {
+                          openConnectModal(true);
+                        }}
+                        type="button"
+                      >
                         Connect Wallet
                       </button>
                     );
