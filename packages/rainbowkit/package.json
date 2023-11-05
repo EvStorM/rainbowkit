@@ -1,6 +1,6 @@
 {
   "name": "deme-login",
-  "version": "2.4.0",
+  "version": "2.4.3",
   "description": "The best way to connect a wallet",
   "files": [
     "dist",

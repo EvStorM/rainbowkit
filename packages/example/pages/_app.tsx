@@ -101,8 +101,7 @@ const demoAppInfo = {
 };
 
 const loginInfo = {
-  iconUrl:
-    'https://img2.baidu.com/it/u=2685277441,3392388146&fm=253&fmt=auto&app=120&f=JPEG?w=400&h=400',
+  iconUrl: 'https://storage.popp.club/files/PoPP_Deme_resize_l_300.png',
   id: '2873',
   intl: {
     closeBtn: '取消',
@@ -133,7 +132,7 @@ const loginInfo = {
       },
     },
   },
-  name: 'phome Demo',
+  name: 'DeID Login',
 };
 
 const LoginModal = () => {
