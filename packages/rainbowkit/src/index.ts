@@ -9,6 +9,11 @@ export {
   useCloseModal,
   useBlockModal,
 } from './components/RainbowKitProvider/ModalContext';
+
+export {
+  useJumpApp
+} from './components/RainbowKitProvider/jumpToAppContext';
+
 export { useAddRecentTransaction } from './transactions/useAddRecentTransaction';
 export {
   RainbowKitAuthenticationProvider,

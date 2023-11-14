@@ -161,7 +161,6 @@ export function ConnectDetail({
   compactModeEnabled,
   connectionError,
   intl,
-  onClose,
   qrCodeUri,
   reconnect,
   wallet,
@@ -172,7 +171,6 @@ export function ConnectDetail({
   qrCodeUri?: string;
   reconnect: (wallet: WalletConnector) => void;
   wallet: WalletConnector;
-  onClose: () => void;
   intl?: any;
 }) {
   const {

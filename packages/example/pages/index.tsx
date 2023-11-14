@@ -4,6 +4,7 @@ import {
   useAddRecentTransaction,
   useChainModal,
   useConnectModal,
+  useJumpApp,
 } from 'deme-login';
 import { GetServerSideProps } from 'next';
 import { getServerSession } from 'next-auth';
@@ -127,7 +128,14 @@ const Example = ({ authEnabled }: AppContextProps) => {
   const ready = mounted && (!authEnabled || status !== 'loading');
   const connected =
     isWagmiConnected && (!authEnabled || status === 'authenticated');
+  const { jumpApp, appurl } = useJumpApp();
 
+  // jumpApp();
+  console.log(
+    '%c [ jumpApp ]-303-「_app.tsx」',
+    'font-size:13px; background:#FFE47F; color:#000000;',
+    appurl
+  );
   return (
     <div
       style={{
@@ -162,7 +170,14 @@ const Example = ({ authEnabled }: AppContextProps) => {
       </div>
 
       <div>
-        <h3 style={{ fontFamily: 'sans-serif' }}>Custom buttons</h3>
+        <h3
+          onClick={() => {
+            jumpApp();
+          }}
+          style={{ fontFamily: 'sans-serif' }}
+        >
+          Custom buttons
+        </h3>
         <ConnectButton.Custom>
           {({
             account,

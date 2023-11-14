@@ -9,6 +9,7 @@ export type loginInfoType = {
   iconUrl: string;
   name: string;
   id: string;
+  groupName?: string;
   intl?: {
     title?: string;
     connectTitle?: string;
@@ -56,10 +57,12 @@ export const AppContext = createContext<{
   loginInfo?: loginInfoType;
   mobileQRCode?: boolean;
   phoneLogin?: boolean;
+  isMobile?: boolean;
   onLoading?: () => void;
   onSuccess?: () => void;
   onNotInstalled?: () => void;
   onCallSuccess?: () => void;
   onError?: (error: any) => void;
   mobileQRCodeIcon?: string | (() => Promise<string>);
+  jumpToApp?: () => Promise<boolean>;
 }>(defaultAppInfo);

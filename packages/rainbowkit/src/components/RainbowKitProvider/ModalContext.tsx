@@ -50,6 +50,7 @@ interface ModalContextValue {
   closeChainModal?: () => void;
   closeConnectModal?: () => void;
   closeModals?: (options?: { keepConnectModalOpen?: boolean }) => void;
+  jumpToApp?: () => void;
 }
 
 const ModalContext = createContext<ModalContextValue>({
@@ -57,6 +58,7 @@ const ModalContext = createContext<ModalContextValue>({
   blockModalOpen: false,
   chainModalOpen: false,
   connectModalOpen: false,
+  jumpToApp: () => {},
 });
 
 interface ModalProviderProps {
@@ -210,9 +212,9 @@ export function useChainModal() {
 }
 
 export function useConnectModal() {
-  const { closeConnectModal, connectModalOpen, openConnectModal } =
+  const { closeConnectModal, connectModalOpen, openConnectModal, jumpToApp } =
     useContext(ModalContext);
-  return { closeConnectModal, connectModalOpen, openConnectModal };
+  return { closeConnectModal, connectModalOpen, openConnectModal, jumpToApp };
 }
 
 export function useBlockModal() {

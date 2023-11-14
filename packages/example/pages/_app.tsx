@@ -8,6 +8,7 @@ import {
   lightTheme,
   midnightTheme,
   RainbowKitProvider,
+  useJumpApp,
 } from 'deme-login';
 import {
   bitKeepWallet,
@@ -46,7 +47,6 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import { AppContextProps } from '../lib/AppContextProps';
 import toast from '../lib/Toast/src';
-
 const RAINBOW_TERMS = 'https://rainbow.me/terms-of-use';
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
@@ -103,6 +103,7 @@ const demoAppInfo = {
 const loginInfo = {
   iconUrl: 'https://storage.popp.club/files/PoPP_Deme_resize_l_300.png',
   id: '2873',
+  groupName: '手机登录',
   intl: {
     closeBtn: '取消',
     connectTitle: '扫码链接',
@@ -171,10 +172,10 @@ const themes = [
   { name: 'dark', theme: darkTheme },
   { name: 'midnight', theme: midnightTheme },
 ] as const;
-type ThemeName = typeof themes[number]['name'];
+type ThemeName = (typeof themes)[number]['name'];
 
 const fontStacks = ['rounded', 'system'] as const;
-type FontStack = typeof fontStacks[number];
+type FontStack = (typeof fontStacks)[number];
 
 const accentColors = [
   'blue',
@@ -185,16 +186,16 @@ const accentColors = [
   'red',
   'custom',
 ] as const;
-type AccentColor = typeof accentColors[number];
+type AccentColor = (typeof accentColors)[number];
 
 const radiusScales = ['large', 'medium', 'small', 'none'] as const;
-type RadiusScale = typeof radiusScales[number];
+type RadiusScale = (typeof radiusScales)[number];
 
 const overlayBlurs = ['large', 'small', 'none'] as const;
-type OverlayBlur = typeof overlayBlurs[number];
+type OverlayBlur = (typeof overlayBlurs)[number];
 
 const modalSizes = ['wide', 'compact'] as const;
-type ModalSize = typeof modalSizes[number];
+type ModalSize = (typeof modalSizes)[number];
 
 function RainbowKitApp({
   Component,
@@ -217,7 +218,6 @@ function RainbowKitApp({
   const [modalSize, setModalSize] = useState<ModalSize>('wide');
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [customAvatar, setCustomAvatar] = useState(false);
-
   const currentTheme = (
     themes.find(({ name }) => name === selectedThemeName) ?? themes[0]
   ).theme;
@@ -253,10 +253,11 @@ function RainbowKitApp({
       chains={chains}
       coolMode={coolModeEnabled}
       initialChain={selectedInitialChainId}
+      isMobile
       loginInfo={loginInfo}
       loginModal={<LoginModal />}
       modalSize={modalSize}
-      onError={error => {
+      onError={() => {
         // window.alert(error.message);
       }}
       onLoading={() => {
@@ -296,7 +297,7 @@ function RainbowKitApp({
                 fontFamily: 'sans-serif',
               }}
             >
-              <h3>RainbowKitProvider props</h3>
+              <h3 onClick={() => {}}>RainbowKitProvider props</h3>
               <table cellSpacing={12}>
                 <tbody>
                   <tr>

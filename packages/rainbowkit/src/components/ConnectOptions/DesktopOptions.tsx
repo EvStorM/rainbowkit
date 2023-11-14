@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { touchableStyles } from '../../css/touchableStyles';
 import { isSafari } from '../../utils/browsers';
 import { groupBy } from '../../utils/groupBy';
+import openApp from '../../utils/openApp';
 import {
   useWalletConnectors,
   WalletConnector,
@@ -27,6 +28,7 @@ import {
   InstructionMobileDetail,
 } from './ConnectDetails';
 import { ScrollClassName, sidebar } from './DesktopOptions.css';
+import { JumpAppContext } from '../RainbowKitProvider/jumpToAppContext';
 
 export enum WalletStep {
   local = 'LOCAL',
@@ -52,7 +54,9 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
   const [connectionError, setConnectionError] = useState(false);
   const modalSize = useContext(ModalSizeContext);
   const compactModeEnabled = modalSize === ModalSizeOptions.COMPACT;
-  const { loginInfo, loginModal } = useContext(AppContext);
+  const { isMobile, loginInfo, loginModal, onCallSuccess, onNotInstalled } =
+    useContext(AppContext);
+  const { setAppUrl } = useContext(JumpAppContext);
   const intl = loginInfo?.intl;
   const wallets = useWalletConnectors()
     .filter(wallet => wallet.ready || !!wallet.extensionDownloadUrl)
@@ -81,7 +85,6 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
   const selectWallet = (wallet: WalletConnector) => {
     connectToWallet(wallet);
     setSelectedOptionId(wallet.id);
-
     if (wallet.ready) {
       // We need to guard against "onConnecting" callbacks being fired
       // multiple times since connector instances can be shared between
@@ -94,34 +97,89 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
         callbackFired = true;
 
         const sWallet = wallets.find(w => wallet.id === w.id);
-        const uri = await sWallet?.qrCode?.getUri();
-        setQrCodeUri(uri);
+        if (!isMobile) {
+          const uri = await sWallet?.qrCode?.getUri();
+          setQrCodeUri(uri);
+          setTimeout(
+            () => {
+              setSelectedWallet(sWallet);
+              changeWalletStep(WalletStep.Connect);
+            },
+            uri ? 0 : 50
+          );
+          // This timeout prevents the UI from flickering if connection is instant,
+          // otherwise users will see a flash of the "connecting" state.
+          // If the WalletConnect request is rejected, restart the wallet
+          // selection flow to create a new connection with a new QR code
+          const provider = await sWallet?.connector.getProvider();
+          const connection = provider?.signer?.connection;
 
-        // This timeout prevents the UI from flickering if connection is instant,
-        // otherwise users will see a flash of the "connecting" state.
-        setTimeout(
-          () => {
-            setSelectedWallet(sWallet);
-            changeWalletStep(WalletStep.Connect);
-          },
-          uri ? 0 : 50
-        );
-
-        // If the WalletConnect request is rejected, restart the wallet
-        // selection flow to create a new connection with a new QR code
-        const provider = await sWallet?.connector.getProvider();
-        const connection = provider?.signer?.connection;
-        if (connection?.on && connection?.off) {
-          const handleConnectionClose = () => {
-            removeHandlers();
-            selectWallet(wallet);
-          };
-          const removeHandlers = () => {
-            connection.off('close', handleConnectionClose);
-            connection.off('open', removeHandlers);
-          };
-          connection.on('close', handleConnectionClose);
-          connection.on('open', removeHandlers);
+          if (connection?.on && connection?.off) {
+            const handleConnectionClose = () => {
+              removeHandlers();
+              selectWallet(wallet);
+            };
+            const removeHandlers = () => {
+              connection.off('close', handleConnectionClose);
+              connection.off('open', removeHandlers);
+            };
+            connection.on('close', handleConnectionClose);
+            connection.on('open', removeHandlers);
+          }
+        } else {
+          const getMobileUri = sWallet?.mobile?.getUri;
+          console.log(
+            '%c [ sWallet ]-131-「DesktopOptions.tsx」',
+            'font-size:13px; background:#FFE47F; color:#000000;',
+            sWallet
+          );
+          if (getMobileUri) {
+            setTimeout(() => {
+              setSelectedWallet(sWallet);
+              changeWalletStep(WalletStep.Connect);
+            }, 0);
+            const mobileUri = await getMobileUri();
+            setAppUrl(mobileUri);
+            // If the WalletConnect request is rejected, restart the wallet
+            // selection flow to create a new connection with a new QR code
+            const provider = await wallet?.connector.getProvider();
+            const connection = provider?.signer?.connection;
+            if (connection?.on && connection?.off) {
+              const handleConnectionClose = () => {
+                removeHandlers();
+              };
+              const removeHandlers = () => {
+                connection.off('close', handleConnectionClose);
+                connection.off('open', removeHandlers);
+                // connection.off('error', handleConnectionError);
+              };
+              connection.on('close', handleConnectionClose);
+              connection.on('open', removeHandlers);
+              // connection.on('error', handleConnectionError);
+            }
+            if (mobileUri.startsWith('http')) {
+              // Workaround for https://github.com/rainbow-me/rainbowkit/issues/524.
+              // Using 'window.open' causes issues on iOS in non-Safari browsers and
+              // WebViews where a blank tab is left behind after connecting.
+              // This is especially bad in some WebView scenarios (e.g. following a
+              // link from Twitter) where the user doesn't have any mechanism for
+              // closing the blank tab.
+              // For whatever reason, links with a target of "_blank" don't suffer
+              // from this problem, and programmatically clicking a detached link
+              // element with the same attributes also avoids the issue.
+              const link = document.createElement('a');
+              link.href = mobileUri;
+              link.target = '_blank';
+              link.rel = 'noreferrer noopener';
+              link.click();
+            } else {
+              openApp(mobileUri, {
+                callFailed: onNotInstalled,
+                callSuccess: onCallSuccess,
+                // landingPage: wallet?.mobileDownloadUrl,
+              });
+            }
+          }
         }
       });
     } else {
@@ -217,7 +275,6 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
           compactModeEnabled
           connectionError={connectionError}
           intl={intl}
-          onClose={onClose}
           qrCodeUri={qrCodeUri}
           reconnect={connectToWallet}
           wallet={selectedWallet}
@@ -325,15 +382,24 @@ export function DesktopOptions({ onClose }: { onClose: () => void }) {
             style={{ maxWidth: 368 }}
           >
             {compactModeEnabled && loginInfo && (
-              <ModalSelection
-                iconUrl={loginInfo.iconUrl}
-                key={loginInfo.id}
-                name={loginInfo.name}
-                onClick={() => {
-                  setWalletStep(WalletStep.local);
-                }}
-                testId={`wallet-loginInfo-${loginInfo.id}`}
-              />
+              <Fragment>
+                {loginInfo.groupName && (
+                  <Box marginBottom="8" marginTop="16" marginX="6">
+                    <Text color="modalTextSecondary" size="14" weight="bold">
+                      {loginInfo.groupName}
+                    </Text>
+                  </Box>
+                )}
+                <ModalSelection
+                  iconUrl={loginInfo.iconUrl}
+                  key={loginInfo.id}
+                  name={loginInfo.name}
+                  onClick={() => {
+                    setWalletStep(WalletStep.local);
+                  }}
+                  testId={`wallet-loginInfo-${loginInfo.id}`}
+                />
+              </Fragment>
             )}
             {Object.entries(groupedWallets).map(
               ([groupName, wallets], index) =>
